@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
-const emptyForm = { titulo: '', descripcion: '', portadaFile: null }
+const emptyForm = { titulo: '', descripcion: '', audioFile: null, portadaFile: null }
 
 export default function LibroForm({ onSaved, onCancel, initialData }) {
   const [form, setForm] = useState(initialData || emptyForm)
@@ -11,9 +11,9 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target
-    if (files && name === 'portadaFile') {
-      // Volviendo a la subida directa: guardamos el archivo tal cual se seleccionó
       setForm((f) => ({ ...f, portadaFile: files[0] }))
+    } else if (files && name === 'audioFile') {
+      setForm((f) => ({ ...f, audioFile: files[0] }))
     } else {
       setForm((f) => ({ ...f, [name]: value }))
     }
@@ -36,10 +36,13 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
     try {
       let portada_url = null
 
-      if (form.portadaFile) {
-        setProgress('Subiendo portada…')
-        // El bucket es 'portadas-libros' asumiendo que es el configurado en Supabase
         portada_url = await uploadFile('portadas-libros', form.portadaFile, 'libro')
+      }
+
+      let audio_url = null
+      if (form.audioFile) {
+        setProgress('Subiendo audio del libro completo…')
+        audio_url = await uploadFile('audios-cuentos', form.audioFile, 'libro-completo')
       }
 
       setProgress('Guardando libro…')
@@ -52,6 +55,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
       }
       
       if (portada_url) payload.portada_url = portada_url
+      if (audio_url) payload.audio_url = audio_url
 
       if (initialData?.id) {
         const { error: dbError } = await supabase
@@ -104,16 +108,22 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
         </label>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-cafe-medio mb-1.5">Descripción (opcional)</label>
-        <textarea
-          name="descripcion"
-          rows={4}
-          value={form.descripcion}
-          onChange={handleChange}
-          className="w-full px-4 py-2.5 bg-marfil border border-arena rounded-xl text-cafe-oscuro focus:outline-none focus:border-terracota transition-colors resize-none"
           placeholder="Breve descripción del libro…"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-cafe-medio mb-1.5">Audio del Libro Completo (opcional)</label>
+        <div className="p-4 bg-marfil border border-arena border-dashed rounded-xl">
+          <input
+            type="file"
+            name="audioFile"
+            accept="audio/*"
+            onChange={handleChange}
+            className="w-full text-sm text-cafe-medio file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-dorado file:text-white file:font-semibold hover:file:bg-amber cursor-pointer transition-all"
+          />
+          <p className="text-[10px] text-cafe-claro mt-2">Sube la versión completa del audiolibro si la tienes.</p>
+        </div>
       </div>
 
       <div>

@@ -14,13 +14,14 @@ export default function AdminLibroCuentosPage() {
   const [cuentos, setCuentos] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const [qrCuento, setQrCuento] = useState(null)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     const [{ data: libroData }, { data: cuentosData }] = await Promise.all([
       supabase.from('libros').select('*').eq('id', libroId).single(),
-      supabase.from('microcuentos').select('*').eq('libro_id', libroId).order('created_at', { ascending: false }),
+      supabase.from('microcuentos').select('*').eq('libro_id', libroId).order('orden', { ascending: true }),
     ])
     setLibro(libroData)
     setCuentos(cuentosData || [])
@@ -38,6 +39,47 @@ export default function AdminLibroCuentosPage() {
     if (!confirm('¿Eliminar este cuento? Esta acción no se puede deshacer.')) return
     await supabase.from('microcuentos').delete().eq('id', id)
     fetchData()
+  }
+
+  const handleMove = async (id, direction) => {
+    const currentIndex = cuentos.findIndex(c => c.id === id)
+    if (direction === 'up' && currentIndex === 0) return
+    if (direction === 'down' && currentIndex === cuentos.length - 1) return
+
+    const newCuentos = [...cuentos]
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    
+    // Swap
+    const temp = newCuentos[currentIndex]
+    newCuentos[currentIndex] = newCuentos[targetIndex]
+    newCuentos[targetIndex] = temp
+
+    // Update order values
+    const reordered = newCuentos.map((c, idx) => ({ ...c, orden: idx + 1 }))
+    setCuentos(reordered)
+
+    // Sync to DB
+    try {
+      for (const c of reordered) {
+        await supabase.from('microcuentos').update({ orden: c.orden }).eq('id', c.id)
+      }
+    } catch (err) {
+      console.error('Error updating order:', err)
+    }
+  }
+
+  const assembleBookText = () => {
+    const fullText = cuentos
+      .filter(c => c.activo)
+      .map(c => `### ${c.titulo}\n\n${c.contenido || '*(Sin contenido)*'}`)
+      .join('\n\n---\n\n')
+    
+    const blob = new Blob([`# ${libro.titulo}\n\n${libro.descripcion || ''}\n\n${fullText}`], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${libro.titulo.replace(/\s+/g, '_')}_Completo.txt`
+    a.click()
   }
 
   const appDomain = import.meta.env.VITE_APP_DOMAIN || window.location.origin
@@ -112,14 +154,87 @@ export default function AdminLibroCuentosPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {cuentos.map((c) => (
+            {/* Assembler Banner */}
+            {cuentos.length > 0 && (
+              <div className="bg-cafe-oscuro text-crema p-6 rounded-2xl mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+                <div>
+                  <h3 className="font-display text-xl font-bold">Ensamblador de Libro</h3>
+                  <p className="text-arena/60 text-sm">Generá el documento completo con todos los cuentos en orden.</p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowPreview(true)}
+                    className="px-5 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all flex items-center gap-2 border border-white/20"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeWidth={2}/></svg>
+                    Vista Previa
+                  </button>
+                  <button
+                    onClick={assembleBookText}
+                    className="px-6 py-3 bg-terracota hover:bg-ambar text-white font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth={2}/></svg>
+                    Descargar .txt
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Preview Modal */}
+            {showPreview && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cafe-oscuro/80 backdrop-blur-sm">
+                <div className="bg-crema w-full max-w-4xl max-h-[90vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95">
+                  <div className="p-6 border-b border-arena/30 flex justify-between items-center bg-marfil">
+                    <h2 className="font-display text-2xl text-cafe-oscuro">Vista Previa del Libro</h2>
+                    <button onClick={() => setShowPreview(false)} className="p-2 hover:bg-arena/20 rounded-full transition-colors">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" strokeWidth={2}/></svg>
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-10 font-serif leading-relaxed text-lg text-cafe-oscuro whitespace-pre-wrap selection:bg-terracota/20">
+                    <h1 className="text-4xl font-display mb-4 text-center">{libro.titulo}</h1>
+                    <p className="text-cafe-medio italic mb-12 text-center">{libro.descripcion}</p>
+                    
+                    {cuentos.map((c, i) => (
+                      <div key={c.id} className="mb-12">
+                        <h3 className="text-terracota font-display text-2xl mb-4">Capítulo {i+1}: {c.titulo}</h3>
+                        <div className="prose max-w-none">
+                          {c.contenido || <em className="text-cafe-claro">Este capítulo no tiene texto escrito aún.</em>}
+                        </div>
+                        {i < cuentos.length - 1 && <div className="mt-12 text-center text-arena font-display">✦ ✦ ✦</div>}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="p-6 border-t border-arena/30 bg-marfil flex justify-end gap-3">
+                    <button onClick={() => setShowPreview(false)} className="px-6 py-2 text-cafe-medio font-bold hover:text-cafe-oscuro">Cerrar</button>
+                    <button 
+                      onClick={() => {
+                        const text = `${libro.titulo}\n\n${libro.descripcion}\n\n` + cuentos.map((c, i) => `Capítulo ${i+1}: ${c.titulo}\n\n${c.contenido}`).join('\n\n---\n\n')
+                        navigator.clipboard.writeText(text)
+                        alert('¡Texto copiado al portapapeles!')
+                      }}
+                      className="px-6 py-2 bg-dorado text-white font-bold rounded-xl shadow-md hover:bg-terracota transition-all"
+                    >
+                      Copiar Todo
+                    </button>
+                    <button onClick={assembleBookText} className="px-6 py-2 bg-terracota text-white font-bold rounded-xl shadow-md hover:bg-ambar transition-all">
+                      Descargar TXT
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {cuentos.map((c, index) => (
               <CuentoRow
                 key={c.id}
                 cuento={c}
+                isFirst={index === 0}
+                isLast={index === cuentos.length - 1}
                 appDomain={appDomain}
                 onQR={() => setQrCuento(c)}
                 onToggle={() => toggleActivo(c.id, c.activo)}
                 onDelete={() => deleteCuento(c.id)}
+                onMove={(dir) => handleMove(c.id, dir)}
                 onUpdated={fetchData}
               />
             ))}
@@ -132,7 +247,7 @@ export default function AdminLibroCuentosPage() {
 }
 
 /* ── CuentoRow: cada cuento con opción de agregar audio después ── */
-function CuentoRow({ cuento: c, appDomain, onQR, onToggle, onDelete, onUpdated }) {
+function CuentoRow({ cuento: c, isFirst, isLast, appDomain, onQR, onToggle, onDelete, onMove, onUpdated }) {
   const [uploading, setUploading] = useState(false)
 
   const handleAddAudio = async (e) => {
@@ -180,6 +295,24 @@ function CuentoRow({ cuento: c, appDomain, onQR, onToggle, onDelete, onUpdated }
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex flex-col gap-1 mr-2 border-r border-arena/30 pr-2">
+          <button 
+            disabled={isFirst}
+            onClick={() => onMove('up')}
+            className="p-1 hover:bg-terracota/10 rounded disabled:opacity-10 text-cafe-medio hover:text-terracota transition-all"
+            title="Subir"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7" strokeWidth={3}/></svg>
+          </button>
+          <button 
+            disabled={isLast}
+            onClick={() => onMove('down')}
+            className="p-1 hover:bg-terracota/10 rounded disabled:opacity-10 text-cafe-medio hover:text-terracota transition-all"
+            title="Bajar"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth={3}/></svg>
+          </button>
+        </div>
         <a href={`${appDomain}/cuento/${c.token_unico}`} target="_blank" rel="noopener noreferrer" className="p-2 text-cafe-medio hover:text-terracota transition-colors rounded-lg hover:bg-terracota/10" title="Ver cuento">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
         </a>

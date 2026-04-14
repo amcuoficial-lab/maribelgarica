@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 import ImageCropperModal from './ImageCropperModal'
 
-const emptyForm = { titulo: '', descripcion: '', audioFile: null, fotoFile: null, fotosExtra: [] }
+const emptyForm = { titulo: '', descripcion: '', contenido: '', audioFile: null, fotoFile: null, fotosExtra: [] }
 
 export default function CuentoForm({ onSaved, onCancel, libroId }) {
   const [form, setForm] = useState(emptyForm)
@@ -74,6 +74,7 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
       const { error: dbError } = await supabase.from('microcuentos').insert({
         titulo: form.titulo,
         descripcion: form.descripcion || null,
+        contenido: form.contenido || null,
         token_unico: token,
         audio_url,
         foto_url,
@@ -116,6 +117,18 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
           onChange={handleChange}
           className="w-full px-4 py-2.5 bg-marfil border border-arena rounded-xl text-cafe-oscuro focus:outline-none focus:border-terracota transition-colors resize-none"
           placeholder="Breve descripción del cuento…"
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-cafe-medio mb-1.5 font-display text-lg">Contenido / Cuerpo del Cuento</label>
+        <textarea
+          name="contenido"
+          rows={12}
+          value={form.contenido}
+          onChange={handleChange}
+          className="w-full px-4 py-3 bg-white border border-arena rounded-2xl text-cafe-oscuro focus:outline-none focus:border-terracota transition-all resize-none shadow-inner leading-relaxed"
+          placeholder="Escribí aquí la historia del cuento..."
         />
       </div>
 
