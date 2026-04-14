@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import ImageCropperModal from './ImageCropperModal'
 
 const emptyForm = { titulo: '', descripcion: '', portadaFile: null }
 
@@ -10,16 +9,11 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
   const [error, setError] = useState('')
   const [progress, setProgress] = useState('')
 
-  // Crop state
-  const [cropData, setCropData] = useState({
-    isOpen: false,
-    file: null
-  })
-
   const handleChange = (e) => {
     const { name, value, files } = e.target
     if (files && name === 'portadaFile') {
-      setCropData({ isOpen: true, file: files[0] })
+      // Volviendo a la subida directa: guardamos el archivo tal cual se seleccionó
+      setForm((f) => ({ ...f, portadaFile: files[0] }))
     } else {
       setForm((f) => ({ ...f, [name]: value }))
     }
@@ -44,6 +38,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
 
       if (form.portadaFile) {
         setProgress('Subiendo portada…')
+        // El bucket es 'portadas-libros' asumiendo que es el configurado en Supabase
         portada_url = await uploadFile('portadas-libros', form.portadaFile, 'libro')
       }
 
@@ -95,7 +90,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
         />
       </div>
 
-      <div className="flex items-center gap-3 py-2 px-4 bg-marfil border border-arena rounded-xl">
+      <div className="flex items-center gap-3 py-2 px-4 bg-marfil border border-arena rounded-xl shadow-inner">
         <input
           type="checkbox"
           id="es_publico"
@@ -113,7 +108,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
         <label className="block text-sm font-medium text-cafe-medio mb-1.5">Descripción (opcional)</label>
         <textarea
           name="descripcion"
-          rows={3}
+          rows={4}
           value={form.descripcion}
           onChange={handleChange}
           className="w-full px-4 py-2.5 bg-marfil border border-arena rounded-xl text-cafe-oscuro focus:outline-none focus:border-terracota transition-colors resize-none"
@@ -123,50 +118,41 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
 
       <div>
         <label className="block text-sm font-medium text-cafe-medio mb-1.5">Imagen de portada (JPG / PNG)</label>
-        <input
-          type="file"
-          name="portadaFile"
-          accept="image/*"
-          onChange={handleChange}
-          className="w-full text-sm text-cafe-medio file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-terracota/10 file:text-terracota file:font-semibold hover:file:bg-terracota/20 cursor-pointer"
-        />
+        <div className="p-4 bg-marfil border border-arena border-dashed rounded-xl">
+          <input
+            type="file"
+            name="portadaFile"
+            accept="image/*"
+            onChange={handleChange}
+            className="w-full text-sm text-cafe-medio file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-terracota file:text-white file:font-semibold hover:file:bg-ambar cursor-pointer transition-all"
+          />
+          <p className="text-[10px] text-cafe-claro mt-2">Sube la imagen ya recortada para obtener el mejor resultado.</p>
+        </div>
       </div>
 
       {error && (
         <p className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg px-4 py-2">{error}</p>
       )}
       {progress && (
-        <p className="text-terracota text-sm font-medium">{progress}</p>
+        <p className="text-terracota text-sm font-medium animate-pulse">{progress}</p>
       )}
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-4 pt-4 border-t border-arena/20">
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 py-2.5 bg-terracota hover:bg-ambar disabled:opacity-50 text-crema font-semibold rounded-xl transition-colors"
+          className="flex-1 py-3 bg-terracota hover:bg-ambar disabled:opacity-50 text-crema font-bold rounded-xl transition-all shadow-md transform hover:scale-[1.02]"
         >
           {loading ? 'Guardando…' : initialData ? 'Guardar Cambios' : 'Crear Libro'}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="px-5 py-2.5 border border-arena hover:border-cafe-medio text-cafe-medio rounded-xl transition-colors"
+          className="px-6 py-3 border border-arena hover:bg-arena/10 text-cafe-medio font-bold rounded-xl transition-all"
         >
           Cancelar
         </button>
       </div>
-
-      {cropData.isOpen && (
-        <ImageCropperModal 
-          file={cropData.file}
-          aspectRatio={3/4}
-          onCancel={() => setCropData({ isOpen: false, file: null })}
-          onCrop={(croppedFile) => {
-            setForm(f => ({ ...f, portadaFile: croppedFile }))
-            setCropData({ isOpen: false, file: null })
-          }}
-        />
-      )}
     </form>
   )
 }
