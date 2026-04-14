@@ -16,6 +16,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
     file: null
   })
 
+  const handleChange = (e) => {
     const { name, value, files } = e.target
     if (files && name === 'portadaFile') {
       setCropData({ isOpen: true, file: files[0] })
@@ -25,7 +26,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
   }
 
   const uploadFile = async (bucket, file, pathPrefix) => {
-    const ext = file.name.split('.').pop()
+    const ext = file.name ? file.name.split('.').pop() : 'jpg'
     const path = `${pathPrefix}-${Date.now()}.${ext}`
     const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false })
     if (error) throw new Error(`Error subiendo archivo: ${error.message}`)
