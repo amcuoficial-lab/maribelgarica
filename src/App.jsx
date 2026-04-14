@@ -4,6 +4,7 @@ import AdminLoginPage from './pages/AdminLoginPage'
 import AdminLibrosPage from './pages/AdminLibrosPage'
 import AdminLibroCuentosPage from './pages/AdminLibroCuentosPage'
 import AdminConfigPage from './pages/AdminConfigPage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
 import AdminCuentosPage from './pages/AdminCuentosPage'
 import CuentoPage from './pages/CuentoPage'
 import NotFoundPage from './pages/NotFoundPage'
@@ -17,7 +18,15 @@ export default function App() {
       <Route path="/cuento/:token" element={<CuentoPage />} />
 
       {/* Panel admin */}
-      <Route path="/admin" element={<AdminLoginPage />} />
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin/libros"
         element={

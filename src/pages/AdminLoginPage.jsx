@@ -10,7 +10,7 @@ export default function AdminLoginPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (!loading && session) navigate('/admin/libros', { replace: true })
+    if (!loading && session) navigate('/admin', { replace: true })
   }, [session, loading, navigate])
 
   const handleSubmit = async (e) => {
