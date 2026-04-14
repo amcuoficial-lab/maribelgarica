@@ -228,6 +228,7 @@ export default function AdminConfigPage() {
                     <ItemFields 
                       item={selectedItem} 
                       onUpload={handleUpload}
+                      onStartCrop={handleStartCrop}
                       onChange={(newContent) => setSelectedItem({ ...selectedItem, content: newContent })} 
                     />
 
@@ -260,7 +261,7 @@ export default function AdminConfigPage() {
   )
 }
 
-function ItemFields({ item, onChange, onUpload }) {
+function ItemFields({ item, onChange, onUpload, onStartCrop }) {
   const { id, content } = item
   if (!content) return null
 
@@ -308,7 +309,7 @@ function ItemFields({ item, onChange, onUpload }) {
                 if (file) {
                   // We could be even more pro and detect which section needs which aspect ratio
                   // but for now we'll pass it as a prop to ImageField
-                  handleStartCrop(file, aspectRatio, (url) => updateField(field, url))
+                  onStartCrop(file, aspectRatio, (url) => updateField(field, url))
                 }
               }} 
             />
@@ -346,7 +347,7 @@ function ItemFields({ item, onChange, onUpload }) {
         <Input label="Subtítulo" value={content.subtitle} field="subtitle" />
         <Input label="Eslogan Superior" value={content.tagline} field="tagline" />
         <Input label="Descripción" value={content.description} field="description" multiline />
-        <ImageField label="Imagen de Fondo" value={content.bg_image} field="bg_image" />
+        <ImageField label="Imagen de Fondo" value={content.bg_image} field="bg_image" aspectRatio={16 / 9} />
       </div>
     )
   }
@@ -404,7 +405,7 @@ function ItemFields({ item, onChange, onUpload }) {
                           className="hidden" 
                           onChange={(e) => {
                             const file = e.target.files?.[0]
-                            if (file) handleStartCrop(file, 4/5, (url) => updateGalleryItem(i, {photo: url}))
+                            if (file) onStartCrop(file, 4/5, (url) => updateGalleryItem(i, {photo: url}))
                           }} 
                         />
                       </label>
@@ -471,7 +472,7 @@ function ItemFields({ item, onChange, onUpload }) {
                           className="hidden" 
                           onChange={(e) => {
                             const file = e.target.files?.[0]
-                            if (file) handleStartCrop(file, 3/4, (url) => updateProject(i, {photo: url}))
+                            if (file) onStartCrop(file, 3/4, (url) => updateProject(i, {photo: url}))
                           }} 
                         />
                       </label>
@@ -564,7 +565,7 @@ function ItemFields({ item, onChange, onUpload }) {
                           className="hidden" 
                           onChange={(e) => {
                             const file = e.target.files?.[0]
-                            if (file) handleStartCrop(file, 3/4, (url) => updateBook(i, {img: url}))
+                            if (file) onStartCrop(file, 3/4, (url) => updateBook(i, {img: url}))
                           }} 
                         />
                      </label>
