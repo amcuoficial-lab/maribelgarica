@@ -41,7 +41,7 @@ export default function AdminConfigPage() {
 
   const seedDatabase = async () => {
     const defaultSections = [
-      { id: 'hero', section_name: 'Hero / Bienvenida', section_order: 1, content: { title: 'Maribel García', subtitle: 'Guardiana de Historias', tagline: 'Narradora Oral · Museóloga · Locutora', description: 'Magíster en Museología Social. Fundadora de 10 museos comunitarios.', bg_image: '/fotos/hero.jpg' } },
+      { id: 'hero', section_name: 'Hero / Bienvenida', section_order: 1, content: { title: 'Maribel García', subtitle: 'Fundadora del Encuentro “Los Cincuenta que Cuentan”', tagline: 'Narradora Oral · Escritora · Locutora · Fotógrafa', description: 'Magíster en Museología Social. Fundadora de 10 museos comunitarios.', bg_image: '/fotos/hero.jpg' } },
       { id: 'about', section_name: 'Sobre Mí / Biografía', section_order: 2, content: { title: 'Una vida dedicada a las historias', bio: 'Me dedico a rescatar historias...', photo: '/fotos/sobre-mi.jpg' } },
       { id: 'festival', section_name: 'Festival Los 50 que Cuentan', section_order: 3, content: { title: 'Los 50 que Cuentan', location: 'Olavarría, Argentina', description: 'Un encuentro de narración oral...', main_image: '/fotos/festival.jpg', gallery: ['/fotos/brasil.jpg', '/fotos/mural.jpg'] } },
       { id: 'trayectoria', section_name: 'Espectáculos & Proyectos', section_order: 4, content: { title: 'Trayectoria', description: 'Tres décadas recorriendo escenarios...', projects: [{ title: 'Voces del Sur', description: 'Espectáculo de narración oral...', photo: '/fotos/escena.jpg', tag: 'Narración Oral' }] } },

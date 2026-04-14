@@ -20,7 +20,7 @@ export default function HeroSection({ content }) {
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         <p className="text-arena/80 text-sm md:text-base font-medium tracking-[0.3em] uppercase mb-4">
-          {content.tagline || 'Narradora Oral · Museóloga · Locutora'}
+          {content.tagline || 'Narradora Oral · Escritora · Locutora · Fotógrafa'}
         </p>
 
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-crema leading-tight mb-4">
@@ -28,7 +28,7 @@ export default function HeroSection({ content }) {
         </h1>
 
         <p className="font-display italic text-2xl md:text-3xl text-arena mb-8">
-          {content.subtitle || 'Guardiana de Historias'}
+          {content.subtitle || 'Fundadora del Encuentro “Los Cincuenta que Cuentan”'}
         </p>
 
         <p className="text-crema/75 text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed whitespace-pre-line">

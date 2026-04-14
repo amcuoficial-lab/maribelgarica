@@ -46,10 +46,10 @@ insert into public.site_sections (id, section_name, section_order, content) valu
   1,
   '{
     "title": "Maribel García",
-    "subtitle": "Guardiana de Historias",
+    "subtitle": "Fundadora del Encuentro “Los Cincuenta que Cuentan”",
     "description": "Magíster en Museología Social. Fundadora de 10 museos comunitarios.",
     "bg_image": "/fotos/hero.jpg",
-    "tagline": "Narradora Oral · Museóloga · Locutora"
+    "tagline": "Narradora Oral · Escritora · Locutora · Fotógrafa"
   }'
 ),
 (
