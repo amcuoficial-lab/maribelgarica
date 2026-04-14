@@ -1,3 +1,7 @@
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import AdminLayout from '../components/admin/AdminLayout'
 import CuentoForm from '../components/admin/CuentoForm'
 import QRModal from '../components/admin/QRModal'
@@ -121,10 +125,9 @@ export default function AdminLibroCuentosPage() {
             ))}
           </div>
         )}
-      </main>
-
+        </div>
       {qrCuento && <QRModal cuento={qrCuento} onClose={() => setQrCuento(null)} />}
-    </div>
+    </AdminLayout>
   )
 }
 

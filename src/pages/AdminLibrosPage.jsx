@@ -1,3 +1,7 @@
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import AdminLayout from '../components/admin/AdminLayout'
 import LibroForm from '../components/admin/LibroForm'
 
@@ -118,7 +122,7 @@ export default function AdminLibrosPage() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   )
 }
