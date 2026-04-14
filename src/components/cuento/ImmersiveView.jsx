@@ -87,12 +87,12 @@ export default function ImmersiveView({ cuento }) {
           <p className="text-crema/40 text-xs">Narración oral de</p>
           <p className="font-display text-crema/70 text-sm font-semibold">Maribel García</p>
           <a
-            href="https://www.instagram.com/maribelgarciamuseoscuentos"
+            href="https://www.instagram.com/maribelgarciamuseocuentos"
             target="_blank"
             rel="noopener noreferrer"
             className="text-arena/50 hover:text-arena text-xs transition-colors mt-1"
           >
-            @maribelgarciamuseoscuentos
+            @maribelgarciamuseocuentos
           </a>
         </div>
       </div>

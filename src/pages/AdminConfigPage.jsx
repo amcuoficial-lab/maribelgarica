@@ -59,7 +59,7 @@ export default function AdminConfigPage() {
       id: 'global', 
       site_name: 'Maribel García', 
       contact_email: 'maribelmuseos@hotmail.com',
-      social_links: { instagram: 'https://www.instagram.com/maribelgarciamuseoscuentos', youtube: '', spotify: '', tiktok: '' }
+      social_links: { instagram: 'https://www.instagram.com/maribelgarciamuseocuentos', youtube: '', spotify: '', tiktok: '' }
     })
   }
 

@@ -137,7 +137,7 @@ insert into public.site_settings (key, value) values
     "site_name": "Maribel García",
     "contact_email": "maribelmuseos@hotmail.com",
     "social_links": {
-      "instagram": "https://www.instagram.com/maribelgarciamuseoscuentos",
+      "instagram": "https://www.instagram.com/maribelgarciamuseocuentos",
       "spotify": "https://open.spotify.com/show/3x79YfS5u2YID5U8vofN6n",
       "whatsapp": "https://wa.me/549123456789",
       "youtube": "",

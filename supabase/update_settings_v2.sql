@@ -25,7 +25,7 @@ create policy "settings_admin_all" on public.site_settings for all
 -- 5. Insertar los datos iniciales (Seed)
 insert into public.site_settings (id, site_name, contact_email, social_links) 
 values ('global', 'Maribel García', 'maribelmuseos@hotmail.com', '{
-  "instagram": "https://www.instagram.com/maribelgarciamuseoscuentos",
+  "instagram": "https://www.instagram.com/maribelgarciamuseocuentos",
   "spotify": "https://open.spotify.com/show/3x79YfS5u2YID5U8vofN6n",
   "youtube": "https://youtube.com/@maribelgarcia",
   "tiktok": ""

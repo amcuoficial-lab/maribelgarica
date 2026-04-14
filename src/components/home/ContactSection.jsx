@@ -37,7 +37,7 @@ export default function ContactSection() {
               <h3 className="font-display text-xl text-cafe-oscuro mb-4">Información de contacto</h3>
               <div className="space-y-4">
                 <a
-                  href="https://www.instagram.com/maribelgarciamuseoscuentos"
+                  href="https://www.instagram.com/maribelgarciamuseocuentos"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 text-cafe-medio hover:text-terracota transition-colors group"
