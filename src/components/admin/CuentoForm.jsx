@@ -36,13 +36,16 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
     setLoading(true)
 
     try {
-      if (!form.audioFile) throw new Error('Seleccioná un archivo de audio.')
       if (!form.fotoFile) throw new Error('Seleccioná al menos una foto principal.')
 
       const token = uuidv4().replace(/-/g, '').slice(0, 16)
 
-      setProgress('Subiendo audio…')
-      const audio_url = await uploadFile('audios-cuentos', form.audioFile, token)
+      // Audio es opcional
+      let audio_url = null
+      if (form.audioFile) {
+        setProgress('Subiendo audio…')
+        audio_url = await uploadFile('audios-cuentos', form.audioFile, token)
+      }
 
       setProgress('Subiendo foto principal…')
       const foto_url = await uploadFile('fotos-cuentos', form.fotoFile, token)
@@ -107,11 +110,12 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-cafe-medio mb-1.5">Audio (MP3 / M4A) *</label>
+        <label className="block text-sm font-medium text-cafe-medio mb-1.5">
+          Audio (MP3 / M4A) — <span className="text-cafe-claro">opcional, podés agregarlo después</span>
+        </label>
         <input
           type="file"
           name="audioFile"
-          required
           accept="audio/*"
           onChange={handleChange}
           className="w-full text-sm text-cafe-medio file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-terracota/10 file:text-terracota file:font-semibold hover:file:bg-terracota/20 cursor-pointer"

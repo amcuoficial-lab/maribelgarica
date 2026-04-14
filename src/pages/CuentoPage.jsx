@@ -12,10 +12,10 @@ export default function CuentoPage() {
   useEffect(() => {
     async function load() {
       try {
-        // Buscar el cuento por token — sin filtro de activo para que los QR siempre funcionen
+        // Traer el cuento con el nombre del libro
         const { data, error } = await supabase
           .from('microcuentos')
-          .select('*')
+          .select('*, libros(titulo)')
           .eq('token_unico', token)
           .maybeSingle()
 

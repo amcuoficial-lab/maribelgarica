@@ -6,6 +6,9 @@ export default function ImmersiveView({ cuento }) {
   const allPhotos = [cuento.foto_url, ...(cuento.fotos_extra || [])].filter(Boolean)
   const [activePhoto, setActivePhoto] = useState(0)
 
+  // Nombre del libro (viene del join en CuentoPage)
+  const libroNombre = cuento.libros?.titulo || 'Maribel García — Guardiana de Historias'
+
   return (
     <div className="min-h-screen relative flex flex-col overflow-hidden">
       {/* Full-screen blurred background photo */}
@@ -18,10 +21,10 @@ export default function ImmersiveView({ cuento }) {
         <div className="absolute inset-0 bg-gradient-to-b from-cafe-oscuro/60 via-cafe-oscuro/40 to-cafe-oscuro/90" />
       </div>
 
-      {/* Branding top */}
+      {/* Branding top: nombre del libro */}
       <div className="text-center pt-6 pb-2">
         <p className="text-arena/60 text-xs font-medium tracking-[0.2em] uppercase">
-          Maribel García — Guardiana de Historias
+          {libroNombre}
         </p>
       </div>
 
@@ -70,8 +73,14 @@ export default function ImmersiveView({ cuento }) {
           </p>
         )}
 
-        {/* Audio player */}
-        <AudioPlayer src={cuento.audio_url} title="Escuchá el cuento" />
+        {/* Audio player — solo si hay audio */}
+        {cuento.audio_url ? (
+          <AudioPlayer src={cuento.audio_url} title="Escuchá el cuento" />
+        ) : (
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-4 text-center">
+            <p className="text-crema/40 text-sm">🎙️ Audio próximamente</p>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="mt-10 pt-8 border-t border-white/10 flex flex-col items-center gap-2">
