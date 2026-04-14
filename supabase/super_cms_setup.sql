@@ -47,7 +47,7 @@ insert into public.site_sections (id, section_name, section_order, content) valu
   '{
     "title": "Maribel García",
     "subtitle": "Guardiana de Historias",
-    "description": "Magíster en Museología Social. Fundadora de 10 museos comunitarios. Creadora del festival Los 50 que Cuentan.",
+    "description": "Magíster en Museología Social. Fundadora de 10 museos comunitarios.",
     "bg_image": "/fotos/hero.jpg",
     "tagline": "Narradora Oral · Museóloga · Locutora"
   }'
