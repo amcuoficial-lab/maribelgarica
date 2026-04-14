@@ -13,7 +13,7 @@ export default function AboutSection() {
           <div className="relative">
             <div className="aspect-[3/4] overflow-hidden rounded-2xl shadow-2xl">
               <img
-                src="/fotos/retrato.jpg"
+                src="/fotos/sobre-mi.jpg"
                 alt="Maribel García"
                 className="w-full h-full object-cover object-top"
               />

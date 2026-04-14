@@ -11,17 +11,23 @@ export default function CuentoPage() {
 
   useEffect(() => {
     async function load() {
-      const { data, error } = await supabase
-        .from('microcuentos')
-        .select('*')
-        .eq('token_unico', token)
-        .eq('activo', true)
-        .single()
+      try {
+        // Buscar el cuento por token — sin filtro de activo para que los QR siempre funcionen
+        const { data, error } = await supabase
+          .from('microcuentos')
+          .select('*')
+          .eq('token_unico', token)
+          .maybeSingle()
 
-      if (error || !data) {
+        if (error || !data) {
+          console.error('Error cargando cuento:', error)
+          setNotFound(true)
+        } else {
+          setCuento(data)
+        }
+      } catch (err) {
+        console.error('Error inesperado:', err)
         setNotFound(true)
-      } else {
-        setCuento(data)
       }
       setLoading(false)
     }
