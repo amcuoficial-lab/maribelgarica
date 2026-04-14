@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
+import ImageCropperModal from './ImageCropperModal'
 
 const emptyForm = { titulo: '', descripcion: '', audioFile: null, fotoFile: null, fotosExtra: [] }
 
@@ -10,10 +11,19 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
   const [error, setError] = useState('')
   const [progress, setProgress] = useState('')
 
+  // Crop state
+  const [cropData, setCropData] = useState({
+    isOpen: false,
+    file: null,
+    targetField: ''
+  })
+
   const handleChange = (e) => {
     const { name, value, files } = e.target
     if (name === 'fotosExtra') {
       setForm((f) => ({ ...f, fotosExtra: Array.from(files) }))
+    } else if (files && name === 'fotoFile') {
+      setCropData({ isOpen: true, file: files[0], targetField: 'fotoFile' })
     } else if (files) {
       setForm((f) => ({ ...f, [name]: files[0] }))
     } else {
@@ -174,6 +184,18 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
           Cancelar
         </button>
       </div>
+
+      {cropData.isOpen && (
+        <ImageCropperModal 
+          file={cropData.file}
+          aspectRatio={4/5}
+          onCancel={() => setCropData({ isOpen: false, file: null, targetField: '' })}
+          onCrop={(croppedFile) => {
+            setForm(f => ({ ...f, [cropData.targetField]: croppedFile }))
+            setCropData({ isOpen: false, file: null, targetField: '' })
+          }}
+        />
+      )}
     </form>
   )
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import ImageCropperModal from './ImageCropperModal'
 
 const emptyForm = { titulo: '', descripcion: '', portadaFile: null }
 
@@ -9,10 +10,15 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
   const [error, setError] = useState('')
   const [progress, setProgress] = useState('')
 
-  const handleChange = (e) => {
+  // Crop state
+  const [cropData, setCropData] = useState({
+    isOpen: false,
+    file: null
+  })
+
     const { name, value, files } = e.target
-    if (files) {
-      setForm((f) => ({ ...f, [name]: files[0] }))
+    if (files && name === 'portadaFile') {
+      setCropData({ isOpen: true, file: files[0] })
     } else {
       setForm((f) => ({ ...f, [name]: value }))
     }
@@ -148,6 +154,18 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
           Cancelar
         </button>
       </div>
+
+      {cropData.isOpen && (
+        <ImageCropperModal 
+          file={cropData.file}
+          aspectRatio={3/4}
+          onCancel={() => setCropData({ isOpen: false, file: null })}
+          onCrop={(croppedFile) => {
+            setForm(f => ({ ...f, portadaFile: croppedFile }))
+            setCropData({ isOpen: false, file: null })
+          }}
+        />
+      )}
     </form>
   )
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/admin/AdminLayout'
+import ImageCropperModal from '../components/admin/ImageCropperModal'
 
 export default function AdminConfigPage() {
   const [sections, setSections] = useState([])
@@ -9,6 +10,14 @@ export default function AdminConfigPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState(null)
+  
+  // Image cropping state
+  const [cropData, setCropData] = useState({
+    isOpen: false,
+    file: null,
+    aspectRatio: 1,
+    onDone: null
+  })
 
   useEffect(() => {
     fetchData()
@@ -109,6 +118,16 @@ export default function AdminConfigPage() {
       fetchData()
     }
     setSaving(false)
+  }
+
+  const handleStartCrop = (file, aspectRatio, onDone) => {
+    if (!file) return
+    setCropData({
+      isOpen: true,
+      file,
+      aspectRatio,
+      onDone
+    })
   }
 
   const handleUpload = async (file, onDone) => {
@@ -223,6 +242,19 @@ export default function AdminConfigPage() {
             </div>
           </div>
         )}
+
+        {/* Global Cropper Modal */}
+        {cropData.isOpen && (
+          <ImageCropperModal 
+            file={cropData.file}
+            aspectRatio={cropData.aspectRatio}
+            onCancel={() => setCropData({ ...cropData, isOpen: false })}
+            onCrop={(croppedFile) => {
+              setCropData({ ...cropData, isOpen: false })
+              handleUpload(croppedFile, cropData.onDone)
+            }}
+          />
+        )}
       </div>
     </AdminLayout>
   )
@@ -256,7 +288,7 @@ function ItemFields({ item, onChange, onUpload }) {
     </div>
   )
 
-  const ImageField = ({ label, value, field }) => (
+  const ImageField = ({ label, value, field, aspectRatio = 1 }) => (
     <div className="space-y-2">
       <label className="block text-sm font-bold text-cafe-oscuro">{label}</label>
       <div className="flex gap-4 items-center p-4 bg-marfil rounded-xl border border-arena/50">
@@ -267,7 +299,19 @@ function ItemFields({ item, onChange, onUpload }) {
           <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-arena/50 text-cafe-medio text-xs font-bold rounded-lg cursor-pointer hover:bg-arena/10">
             <svg className="w-4 h-4 text-terracota" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" strokeWidth={2}/></svg>
             Subir Foto
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => onUpload(e.target.files[0], (url) => updateField(field, url))} />
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  // We could be even more pro and detect which section needs which aspect ratio
+                  // but for now we'll pass it as a prop to ImageField
+                  handleStartCrop(file, aspectRatio, (url) => updateField(field, url))
+                }
+              }} 
+            />
           </label>
           <input type="text" value={value || ''} onChange={(e) => updateField(field, e.target.value)} placeholder="O link directo" className="w-full px-4 py-2 bg-transparent border-b border-arena/30 text-[10px] text-cafe-claro focus:border-terracota outline-none" />
         </div>
@@ -312,7 +356,7 @@ function ItemFields({ item, onChange, onUpload }) {
       <div className="space-y-6">
         <Input label="Título" value={content.title} field="title" />
         <Input label="Biografía" value={content.bio} field="bio" multiline />
-        <ImageField label="Foto de Perfil" value={content.photo} field="photo" />
+        <ImageField label="Foto de Perfil" value={content.photo} field="photo" aspectRatio={1 / 1} />
       </div>
     )
   }
@@ -327,7 +371,7 @@ function ItemFields({ item, onChange, onUpload }) {
         <Input label="Título de la Sección" value={content.title} field="title" />
         <Input label="Subtítulo" value={content.subtitle} field="subtitle" />
         <Input label="Descripción / Intro" value={content.description} field="description" multiline />
-        <ImageField label="Imagen Principal (Banner)" value={content.main_image} field="main_image" />
+        <ImageField label="Imagen Principal (Banner)" value={content.main_image} field="main_image" aspectRatio={16 / 9} />
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h4 className="font-display text-lg">Galería / Historias ({gallery.length})</h4>
@@ -354,7 +398,15 @@ function ItemFields({ item, onChange, onUpload }) {
                       </div>
                       <label className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-arena/50 text-cafe-medio text-[10px] font-bold rounded cursor-pointer hover:bg-arena/10">
                         Cambiar Foto
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => onUpload(e.target.files[0], (url) => updateGalleryItem(i, {photo: url}))} />
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleStartCrop(file, 4/5, (url) => updateGalleryItem(i, {photo: url}))
+                          }} 
+                        />
                       </label>
                    </div>
                    <button type="button" onClick={() => updateField('gallery', gallery.filter((_, idx)=>idx!==i))} className="text-red-400 hover:text-red-600">
@@ -413,7 +465,15 @@ function ItemFields({ item, onChange, onUpload }) {
                       </div>
                       <label className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-arena/50 text-cafe-medio text-[10px] font-bold rounded cursor-pointer hover:bg-arena/10">
                         Cambiar Imagen
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => onUpload(e.target.files[0], (url) => updateProject(i, {photo: url}))} />
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleStartCrop(file, 3/4, (url) => updateProject(i, {photo: url}))
+                          }} 
+                        />
                       </label>
                    </div>
                    <button type="button" onClick={() => updateField('projects', projects.filter((_, idx)=>idx!==i))} className="text-red-400 hover:text-red-600">
@@ -498,7 +558,15 @@ function ItemFields({ item, onChange, onUpload }) {
                      <label className="flex items-center justify-center gap-2 w-full py-2 bg-white border border-arena/50 text-cafe-medio text-[10px] font-bold rounded-lg cursor-pointer hover:bg-arena/10 transition-colors">
                         <svg className="w-3 h-3 text-terracota" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" strokeWidth={2.5}/></svg>
                         Cambiar
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => onUpload(e.target.files[0], (url) => updateBook(i, {img: url}))} />
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) handleStartCrop(file, 3/4, (url) => updateBook(i, {img: url}))
+                          }} 
+                        />
                      </label>
                    </div>
 
