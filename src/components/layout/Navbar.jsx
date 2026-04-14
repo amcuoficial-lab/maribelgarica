@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { FaInstagram, FaYoutube, FaSpotify, FaTiktok } from 'react-icons/fa'
 
 const navLinks = [
   { href: '#sobre-mi', label: 'Sobre mí' },
@@ -10,7 +11,14 @@ const navLinks = [
   { href: '#contacto', label: 'Contacto' },
 ]
 
-export default function Navbar() {
+const iconMap = {
+  instagram: FaInstagram,
+  youtube: FaYoutube,
+  spotify: FaSpotify,
+  tiktok: FaTiktok
+}
+
+export default function Navbar({ socialLinks = {} }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const location = useLocation()
@@ -45,18 +53,39 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-6">
-          {navLinks.map(({ href, label }) => (
-            <li key={href}>
-              <button
-                onClick={() => handleNav(href)}
-                className="text-sm font-medium text-cafe-medio hover:text-terracota transition-colors cursor-pointer"
-              >
-                {label}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden md:flex items-center gap-8">
+          <ul className="flex items-center gap-6">
+            {navLinks.map(({ href, label }) => (
+              <li key={href}>
+                <button
+                  onClick={() => handleNav(href)}
+                  className="text-sm font-medium text-cafe-medio hover:text-terracota transition-colors cursor-pointer"
+                >
+                  {label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {/* Social icons */}
+          <div className="flex items-center gap-4 border-l border-arena/40 pl-8">
+            {Object.entries(socialLinks).map(([platform, url]) => {
+              const Icon = iconMap[platform]
+              if (!Icon || !url) return null
+              return (
+                <a
+                  key={platform}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cafe-medio hover:text-terracota transition-colors"
+                >
+                  <Icon className="w-5 h-5" />
+                </a>
+              )
+            })}
+          </div>
+        </div>
 
         {/* Mobile hamburger */}
         <button
@@ -75,7 +104,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-marfil/98 backdrop-blur-md border-t border-arena/40 px-6 py-4">
-          <ul className="flex flex-col gap-4">
+          <ul className="flex flex-col gap-4 mb-6">
             {navLinks.map(({ href, label }) => (
               <li key={href}>
                 <button
@@ -87,6 +116,26 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
+
+          {/* Social Mobile */}
+          <div className="flex items-center gap-6 border-t border-arena/20 pt-6">
+            {Object.entries(socialLinks).map(([platform, url]) => {
+              const Icon = iconMap[platform]
+              if (!Icon || !url) return null
+              return (
+                <a
+                  key={platform}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-cafe-medio hover:text-terracota transition-colors"
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="text-sm capitalize">{platform}</span>
+                </a>
+              )
+            })}
+          </div>
         </div>
       )}
     </nav>

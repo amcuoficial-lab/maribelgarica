@@ -1,4 +1,14 @@
-export default function FestivalSection() {
+export default function FestivalSection({ content }) {
+  if (!content) return null
+
+  const stats = content.stats || [
+    { v: '50+', l: 'Narradores por edición' },
+    { v: '12+', l: 'Años de historia' },
+    { v: 'Todo el país', l: 'Alcance federal' },
+  ]
+
+  const gallery = content.gallery || ['/fotos/brasil.jpg', '/fotos/mural.jpg', '/fotos/playa.jpg', '/fotos/museo-2.jpg']
+
   return (
     <section id="festival" className="py-24 px-6 bg-crema overflow-hidden">
       <div className="max-w-6xl mx-auto">
@@ -9,33 +19,15 @@ export default function FestivalSection() {
               Festival
             </p>
             <h2 className="font-display text-4xl md:text-5xl text-cafe-oscuro mb-6 leading-tight">
-              Los 50 que Cuentan
+              {content.title || 'Los 50 que Cuentan'}
             </h2>
 
-            <div className="space-y-4 text-cafe-medio text-base leading-relaxed">
-              <p>
-                <strong className="text-cafe-oscuro">Los 50 que Cuentan</strong> es un festival de
-                narración oral que fundé con la convicción de que cada historia merece ser escuchada
-                y cada narrador merece un escenario.
-              </p>
-              <p>
-                El festival convoca a narradores de todo el país — voces que cargan con la memoria
-                de sus comunidades, tradiciones orales que de otro modo se perderían, historias que
-                cruzan generaciones y geografías.
-              </p>
-              <p>
-                Trabajamos especialmente con niños y jóvenes, llevando la narración oral a escuelas,
-                plazas y centros comunitarios, porque creemos que el futuro de las historias
-                está en quienes las reciben hoy.
-              </p>
+            <div className="text-cafe-medio text-base leading-relaxed whitespace-pre-line">
+              {content.description || 'Los 50 que Cuentan es un festival de narración oral...'}
             </div>
 
             <div className="mt-8 grid grid-cols-3 gap-4">
-              {[
-                { v: '50+', l: 'Narradores por edición' },
-                { v: '12+', l: 'Años de historia' },
-                { v: 'Todo el país', l: 'Alcance federal' },
-              ].map(({ v, l }) => (
+              {stats.map(({ v, l }) => (
                 <div key={l} className="text-center bg-marfil rounded-xl p-4">
                   <p className="font-display text-2xl font-bold text-terracota">{v}</p>
                   <p className="text-xs text-cafe-medio mt-1 leading-tight">{l}</p>
@@ -48,7 +40,7 @@ export default function FestivalSection() {
           <div className="order-1 md:order-2 relative">
             <div className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl">
               <img
-                src="/fotos/festival.jpg"
+                src={content.main_image || "/fotos/festival.jpg"}
                 alt="Festival Los 50 que Cuentan"
                 className="w-full h-full object-cover"
               />
@@ -61,7 +53,7 @@ export default function FestivalSection() {
 
         {/* Extra photos strip */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {['/fotos/brasil.jpg', '/fotos/mural.jpg', '/fotos/playa.jpg', '/fotos/museo-2.jpg'].map((src, i) => (
+          {gallery.map((src, i) => (
             <div key={i} className="aspect-square overflow-hidden rounded-xl shadow-md">
               <img
                 src={src}

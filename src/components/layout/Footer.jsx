@@ -1,4 +1,7 @@
-export default function Footer() {
+export default function Footer({ socialLinks = {} }) {
+  const instagram = socialLinks.instagram || "https://www.instagram.com/maribelgarciamuseoscuentos"
+  const instaHandle = instagram.split('/').pop() || "maribelgarciamuseoscuentos"
+
   return (
     <footer className="bg-cafe-oscuro text-crema py-10 px-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -9,12 +12,12 @@ export default function Footer() {
 
         <div className="flex flex-col items-center gap-1 text-sm text-crema/60">
           <a
-            href="https://www.instagram.com/maribelgarciamuseoscuentos"
+            href={instagram}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-dorado transition-colors"
           >
-            @maribelgarciamuseoscuentos
+            @{instaHandle}
           </a>
           <span>Argentina</span>
         </div>

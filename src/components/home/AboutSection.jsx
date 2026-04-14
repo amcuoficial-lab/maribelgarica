@@ -1,10 +1,12 @@
-const stats = [
-  { value: '10', label: 'Museos Fundados' },
-  { value: '30+', label: 'Años de Carrera' },
-  { value: 'Magíster', label: 'Museología Social' },
-]
+export default function AboutSection({ content }) {
+  if (!content) return null
+  
+  const stats = content.stats || [
+    { value: '10', label: 'Museos Fundados' },
+    { value: '30+', label: 'Años de Carrera' },
+    { value: 'Magíster', label: 'Museología Social' },
+  ]
 
-export default function AboutSection() {
   return (
     <section id="sobre-mi" className="py-24 px-6 bg-crema">
       <div className="max-w-6xl mx-auto">
@@ -13,7 +15,7 @@ export default function AboutSection() {
           <div className="relative">
             <div className="aspect-[3/4] overflow-hidden rounded-2xl shadow-2xl">
               <img
-                src="/fotos/sobre-mi.jpg"
+                src={content.photo || "/fotos/sobre-mi.jpg"}
                 alt="Maribel García"
                 className="w-full h-full object-cover object-top"
               />
@@ -28,29 +30,13 @@ export default function AboutSection() {
               Sobre mí
             </p>
             <h2 className="font-display text-4xl md:text-5xl text-cafe-oscuro mb-6 leading-tight">
-              Una vida dedicada a las historias
+              {content.title || 'Una vida dedicada a las historias'}
             </h2>
 
-            <div className="space-y-4 text-cafe-medio text-base leading-relaxed">
-              <p>
-                Soy narradora oral, museóloga social, locutora, gestora cultural y escritora argentina.
-                A lo largo de mi carrera he dedicado cada momento a rescatar, preservar y compartir
-                las historias que nos construyen como comunidad.
-              </p>
-              <p>
-                Como Magíster en Museología Social, fundé <strong className="text-cafe-oscuro">10 museos comunitarios</strong> en
-                diferentes rincones del país, espacios donde la memoria colectiva cobra vida y las
-                voces de los que no tienen voz encuentran su lugar.
-              </p>
-              <p>
-                La narración oral es mi herramienta más poderosa: creo que las historias sanan,
-                unen y transforman. En cada actuación, en cada cuento, intento tender un puente
-                entre el pasado que nos dio forma y el futuro que estamos construyendo juntos.
-              </p>
-              <p>
-                Conduzco programas de radio y podcast, donde cada semana comparto relatos,
-                entrevistas y reflexiones sobre la cultura, la identidad y el poder de las palabras.
-              </p>
+            <div className="text-cafe-medio text-base leading-relaxed whitespace-pre-line">
+              {content.bio || `Soy narradora oral, museóloga social, locutora, gestora cultural y escritora argentina.
+              A lo largo de mi carrera he dedicado cada momento a rescatar, preservar y compartir
+              las historias que nos construyen como comunidad.`}
             </div>
 
             {/* Stats */}

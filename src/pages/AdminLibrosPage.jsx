@@ -1,7 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../hooks/useAuth'
+import AdminLayout from '../components/admin/AdminLayout'
 import LibroForm from '../components/admin/LibroForm'
 
 export default function AdminLibrosPage() {
@@ -29,41 +26,20 @@ export default function AdminLibrosPage() {
     fetchLibros()
   }
 
-  const handleSignOut = async () => {
-    await signOut()
-    navigate('/admin')
-  }
-
   return (
-    <div className="min-h-screen bg-marfil">
-      {/* Header */}
-      <header className="bg-crema border-b border-arena/50 px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-xl text-cafe-oscuro">Panel de Audiolibros</h1>
-          <p className="text-cafe-medio text-xs">Maribel García — Guardiana de Historias</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <a href="/" className="text-sm text-cafe-medio hover:text-terracota transition-colors">
-            Ver sitio
-          </a>
-          <button onClick={handleSignOut} className="text-sm text-cafe-medio hover:text-red-600 transition-colors">
-            Salir
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-10">
+    <AdminLayout>
+      <div className="max-w-5xl mx-auto px-6 py-10">
         {/* Actions */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="font-display text-2xl text-cafe-oscuro">Mis Libros</h2>
+            <h2 className="font-display text-4xl text-cafe-oscuro">Mis Libros</h2>
             <p className="text-cafe-medio text-sm mt-1">{libros.length} libro{libros.length !== 1 ? 's' : ''}</p>
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="px-5 py-2.5 bg-terracota hover:bg-ambar text-crema font-semibold rounded-xl transition-colors text-sm flex items-center gap-2"
+            className="px-6 py-3 bg-terracota hover:bg-ambar text-crema font-semibold rounded-xl transition-all shadow-lg shadow-terracota/10 flex items-center gap-2"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             Nuevo Libro

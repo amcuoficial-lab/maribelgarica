@@ -1,4 +1,6 @@
-export default function HeroSection() {
+export default function HeroSection({ content }) {
+  if (!content) return null
+
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -8,8 +10,8 @@ export default function HeroSection() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="/fotos/hero.jpg"
-          alt="Maribel García — Guardiana de Historias"
+          src={content.bg_image || "/fotos/hero.jpg"}
+          alt={content.title}
           className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-cafe-oscuro/70 via-cafe-oscuro/50 to-cafe-oscuro/80" />
@@ -18,20 +20,19 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         <p className="text-arena/80 text-sm md:text-base font-medium tracking-[0.3em] uppercase mb-4">
-          Narradora Oral · Museóloga · Locutora
+          {content.tagline || 'Narradora Oral · Museóloga · Locutora'}
         </p>
 
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-crema leading-tight mb-4">
-          Maribel García
+          {content.title || 'Maribel García'}
         </h1>
 
         <p className="font-display italic text-2xl md:text-3xl text-arena mb-8">
-          Guardiana de Historias
+          {content.subtitle || 'Guardiana de Historias'}
         </p>
 
-        <p className="text-crema/75 text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed">
-          Magíster en Museología Social. Fundadora de 10 museos comunitarios.
-          Creadora del festival <em className="text-arena">Los 50 que Cuentan</em>.
+        <p className="text-crema/75 text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed whitespace-pre-line">
+          {content.description || 'Magíster en Museología Social. Fundadora de 10 museos comunitarios.'}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

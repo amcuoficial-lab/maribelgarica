@@ -1,43 +1,16 @@
-const shows = [
-  {
-    photo: '/fotos/escena.jpg',
-    title: 'Voces del Sur',
-    description: 'Espectáculo de narración oral con vestuario tradicional en el Salón Auditorio.',
-    tag: 'Narración Oral',
-  },
-  {
-    photo: '/fotos/conventilleras.jpg',
-    title: 'Las Conventilleras',
-    description: 'Una obra que rescata las historias de las mujeres que forjaron los conventillos porteños.',
-    tag: 'Teatro',
-  },
-  {
-    photo: '/fotos/cuba.jpg',
-    title: 'Raíces del Caribe',
-    description: 'Narración oral con elementos del folclore caribeño. Una inmersión en la memoria afrolatina.',
-    tag: 'Folclore',
-  },
-  {
-    photo: '/fotos/turquia.jpg',
-    title: 'Cuentos del Mundo',
-    description: 'Gira internacional llevando las historias latinoamericanas a escenarios del mundo.',
-    tag: 'Internacional',
-  },
-  {
-    photo: '/fotos/mexico.jpg',
-    title: 'Día de Muertos',
-    description: 'Homenaje a la tradición mexicana del Día de Muertos desde la narración oral.',
-    tag: 'Cultura',
-  },
-  {
-    photo: '/fotos/museo-1.jpg',
-    title: 'Museos Comunitarios',
-    description: 'Fundación y gestión de 10 museos comunitarios a lo largo y ancho del país.',
-    tag: 'Museología',
-  },
-]
+export default function TrajectorySection({ content }) {
+  if (!content) return null
 
-export default function TrajectorySection() {
+  const projects = content.projects || [
+    {
+      photo: '/fotos/escena.jpg',
+      title: 'Voces del Sur',
+      description: 'Espectáculo de narración oral con vestuario tradicional en el Salón Auditorio.',
+      tag: 'Narración Oral',
+    },
+    // ... other defaults can go here if needed
+  ]
+
   return (
     <section id="trayectoria" className="py-24 px-6 bg-marfil">
       <div className="max-w-6xl mx-auto">
@@ -46,16 +19,16 @@ export default function TrajectorySection() {
             Trayectoria
           </p>
           <h2 className="font-display text-4xl md:text-5xl text-cafe-oscuro">
-            Espectáculos & Proyectos
+            {content.title || 'Espectáculos & Proyectos'}
           </h2>
-          <p className="text-cafe-medio mt-4 max-w-xl mx-auto">
-            Tres décadas recorriendo escenarios, museos y comunidades con el poder transformador de las historias.
+          <p className="text-cafe-medio mt-4 max-w-xl mx-auto whitespace-pre-line">
+            {content.description || 'Tres décadas recorriendo escenarios, museos y comunidades con el poder transformador de las historias.'}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {shows.map(({ photo, title, description, tag }) => (
-            <article key={title} className="group overflow-hidden rounded-2xl bg-crema shadow-md hover:shadow-xl transition-shadow duration-300">
+          {projects.map(({ photo, title, description, tag }, i) => (
+            <article key={i} className="group overflow-hidden rounded-2xl bg-crema shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={photo}
