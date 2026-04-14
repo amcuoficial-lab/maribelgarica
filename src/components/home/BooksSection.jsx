@@ -49,51 +49,6 @@ export default function BooksSection({ content, onOpenGallery, publicBooks = [] 
           ))}
         </div>
 
-        {/* Public Digital Library (New) */}
-        {publicBooks.length > 0 && (
-          <div className="pt-16 border-t border-arena/30">
-            <div className="text-center mb-12">
-              <span className="px-4 py-1.5 bg-terracota/10 text-terracota text-xs font-bold rounded-full uppercase tracking-widest mb-4 inline-block">
-                Colecciones Digitales
-              </span>
-              <h3 className="font-display text-3xl text-cafe-oscuro">Biblioteca Audiovisual</h3>
-              <p className="text-cafe-medio text-sm mt-2">Explorá mis libros digitales con cuentos narrados.</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              {publicBooks.map((libro) => (
-                <div key={libro.id} className="group cursor-pointer">
-                  <div className="aspect-[3/4] rounded-xl overflow-hidden shadow-lg transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-terracota/20 relative">
-                    {libro.portada_url ? (
-                      <img 
-                        src={libro.portada_url} 
-                        alt={libro.titulo} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-arena/20 flex items-center justify-center text-5xl">📖</div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-cafe-oscuro/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-4">
-                       <button className="w-full py-2 bg-terracota text-crema text-xs font-bold rounded-lg shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                         VER COLECCIÓN
-                       </button>
-                    </div>
-                    {/* Floating Badge */}
-                    <div className="absolute top-2 right-2 px-2 py-1 bg-crema/90 backdrop-blur-sm rounded-md text-[10px] font-bold text-terracota shadow-sm border border-terracota/20">
-                      AUDIO
-                    </div>
-                  </div>
-                  <h4 className="mt-3 font-display font-semibold text-cafe-oscuro text-sm group-hover:text-terracota transition-colors line-clamp-1">
-                    {libro.titulo}
-                  </h4>
-                  <p className="text-cafe-medio text-[10px] uppercase tracking-tighter">
-                    {libro.microcuentos?.[0]?.count || 0} Historias narradas
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </section>
   )
