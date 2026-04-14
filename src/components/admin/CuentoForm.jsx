@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 
-const emptyForm = { titulo: '', descripcion: '', audioFile: null, fotoFile: null }
+const emptyForm = { titulo: '', descripcion: '', audioFile: null, fotoFile: null, fotosExtra: [] }
 
 export default function CuentoForm({ onSaved, onCancel, libroId }) {
   const [form, setForm] = useState(emptyForm)
@@ -12,7 +12,9 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target
-    if (files) {
+    if (name === 'fotosExtra') {
+      setForm((f) => ({ ...f, fotosExtra: Array.from(files) }))
+    } else if (files) {
       setForm((f) => ({ ...f, [name]: files[0] }))
     } else {
       setForm((f) => ({ ...f, [name]: value }))
@@ -21,7 +23,7 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
 
   const uploadFile = async (bucket, file, pathPrefix) => {
     const ext = file.name.split('.').pop()
-    const path = `${pathPrefix}-${Date.now()}.${ext}`
+    const path = `${pathPrefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`
     const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false })
     if (error) throw new Error(`Error subiendo archivo: ${error.message}`)
     const { data } = supabase.storage.from(bucket).getPublicUrl(path)
@@ -35,14 +37,25 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
 
     try {
       if (!form.audioFile) throw new Error('Seleccioná un archivo de audio.')
-      if (!form.fotoFile) throw new Error('Seleccioná una foto.')
+      if (!form.fotoFile) throw new Error('Seleccioná al menos una foto principal.')
+
+      const token = uuidv4().replace(/-/g, '').slice(0, 16)
 
       setProgress('Subiendo audio…')
-      const token = uuidv4().replace(/-/g, '').slice(0, 16)
       const audio_url = await uploadFile('audios-cuentos', form.audioFile, token)
 
-      setProgress('Subiendo foto…')
+      setProgress('Subiendo foto principal…')
       const foto_url = await uploadFile('fotos-cuentos', form.fotoFile, token)
+
+      // Subir fotos extra si las hay
+      let fotos_extra = []
+      if (form.fotosExtra.length > 0) {
+        for (let i = 0; i < form.fotosExtra.length; i++) {
+          setProgress(`Subiendo foto ${i + 2} de ${form.fotosExtra.length + 1}…`)
+          const url = await uploadFile('fotos-cuentos', form.fotosExtra[i], `${token}-extra-${i}`)
+          fotos_extra.push(url)
+        }
+      }
 
       setProgress('Guardando cuento…')
       const { error: dbError } = await supabase.from('microcuentos').insert({
@@ -51,6 +64,7 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
         token_unico: token,
         audio_url,
         foto_url,
+        fotos_extra: fotos_extra.length > 0 ? fotos_extra : null,
         activo: true,
         libro_id: libroId || null,
       })
@@ -105,7 +119,7 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-cafe-medio mb-1.5">Foto de portada (JPG / PNG) *</label>
+        <label className="block text-sm font-medium text-cafe-medio mb-1.5">Foto principal / portada (JPG / PNG) *</label>
         <input
           type="file"
           name="fotoFile"
@@ -114,6 +128,23 @@ export default function CuentoForm({ onSaved, onCancel, libroId }) {
           onChange={handleChange}
           className="w-full text-sm text-cafe-medio file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-terracota/10 file:text-terracota file:font-semibold hover:file:bg-terracota/20 cursor-pointer"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-cafe-medio mb-1.5">
+          Fotos adicionales (opcional, podés seleccionar varias)
+        </label>
+        <input
+          type="file"
+          name="fotosExtra"
+          accept="image/*"
+          multiple
+          onChange={handleChange}
+          className="w-full text-sm text-cafe-medio file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-dorado/10 file:text-dorado file:font-semibold hover:file:bg-dorado/20 cursor-pointer"
+        />
+        {form.fotosExtra.length > 0 && (
+          <p className="text-xs text-cafe-claro mt-1">{form.fotosExtra.length} foto{form.fotosExtra.length !== 1 ? 's' : ''} extra seleccionada{form.fotosExtra.length !== 1 ? 's' : ''}</p>
+        )}
       </div>
 
       {error && (
