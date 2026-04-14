@@ -84,10 +84,11 @@ export default function AdminConfigPage() {
 
     let error
     if (selectedItem.id === 'settings') {
+      const { id: _id, updated_at: _ua, ...updateData } = selectedItem.content
       const { error: err } = await supabase
         .from('site_settings')
-        .update(selectedItem.content)
-        .eq('id', settings.id)
+        .update(updateData)
+        .eq('id', 'global')
       error = err
     } else {
       const { error: err } = await supabase
