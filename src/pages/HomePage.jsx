@@ -30,7 +30,7 @@ export default function HomePage() {
   const sectionMap = {
     hero: HeroSection,
     about: AboutSection,
-    trajectory: TrajectorySection,
+    trayectoria: TrajectorySection,
     festival: FestivalSection,
     podcast: PodcastSection,
     libros: BooksSection,

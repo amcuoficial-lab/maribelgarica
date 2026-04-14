@@ -26,7 +26,7 @@ export function useSiteData() {
           .from('site_settings')
           .select('*')
           .eq('id', 'global')
-          .single(),
+          .maybeSingle(),
         supabase
           .from('libros')
           .select('*, microcuentos(count)')
@@ -38,7 +38,7 @@ export function useSiteData() {
       if (sectionsRes.error) throw sectionsRes.error
       
       setSections(sectionsRes.data || [])
-      setSettings(settingsRes.data || {})
+      setSettings(settingsRes.data || { site_name: 'Maribel García', social_links: {} })
       setPublicBooks(booksRes.data || [])
 
     } catch (err) {
