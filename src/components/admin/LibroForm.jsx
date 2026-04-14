@@ -3,8 +3,8 @@ import { supabase } from '../../lib/supabase'
 
 const emptyForm = { titulo: '', descripcion: '', portadaFile: null }
 
-export default function LibroForm({ onSaved, onCancel }) {
-  const [form, setForm] = useState(emptyForm)
+export default function LibroForm({ onSaved, onCancel, initialData }) {
+  const [form, setForm] = useState(initialData || emptyForm)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState('')
@@ -41,14 +41,29 @@ export default function LibroForm({ onSaved, onCancel }) {
       }
 
       setProgress('Guardando libro…')
-      const { error: dbError } = await supabase.from('libros').insert({
+      
+      const payload = {
         titulo: form.titulo,
         descripcion: form.descripcion || null,
-        portada_url,
+        es_publico: form.es_publico !== false,
         activo: true,
-      })
+      }
+      
+      if (portada_url) payload.portada_url = portada_url
 
-      if (dbError) throw new Error(dbError.message)
+      if (initialData?.id) {
+        const { error: dbError } = await supabase
+          .from('libros')
+          .update(payload)
+          .eq('id', initialData.id)
+        if (dbError) throw new Error(dbError.message)
+      } else {
+        const { error: dbError } = await supabase
+          .from('libros')
+          .insert(payload)
+        if (dbError) throw new Error(dbError.message)
+      }
+
       onSaved()
     } catch (err) {
       setError(err.message)
@@ -71,6 +86,20 @@ export default function LibroForm({ onSaved, onCancel }) {
           className="w-full px-4 py-2.5 bg-marfil border border-arena rounded-xl text-cafe-oscuro focus:outline-none focus:border-terracota transition-colors"
           placeholder="Ej: La villa von Bernard"
         />
+      </div>
+
+      <div className="flex items-center gap-3 py-2 px-4 bg-marfil border border-arena rounded-xl">
+        <input
+          type="checkbox"
+          id="es_publico"
+          name="es_publico"
+          checked={form.es_publico !== false}
+          onChange={(e) => setForm(f => ({ ...f, es_publico: e.target.checked }))}
+          className="w-5 h-5 accent-terracota cursor-pointer"
+        />
+        <label htmlFor="es_publico" className="text-sm font-medium text-cafe-oscuro cursor-pointer">
+          Libro Público (Visible en la web general)
+        </label>
       </div>
 
       <div>
@@ -109,7 +138,7 @@ export default function LibroForm({ onSaved, onCancel }) {
           disabled={loading}
           className="flex-1 py-2.5 bg-terracota hover:bg-ambar disabled:opacity-50 text-crema font-semibold rounded-xl transition-colors"
         >
-          {loading ? 'Guardando…' : 'Crear Libro'}
+          {loading ? 'Guardando…' : initialData ? 'Guardar Cambios' : 'Crear Libro'}
         </button>
         <button
           type="button"

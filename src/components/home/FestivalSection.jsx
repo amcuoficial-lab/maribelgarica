@@ -1,4 +1,4 @@
-export default function FestivalSection({ content }) {
+export default function FestivalSection({ content, onOpenGallery }) {
   if (!content) return null
 
   const stats = content.stats || [
@@ -7,7 +7,8 @@ export default function FestivalSection({ content }) {
     { v: 'Todo el país', l: 'Alcance federal' },
   ]
 
-  const gallery = content.gallery || ['/fotos/brasil.jpg', '/fotos/mural.jpg', '/fotos/playa.jpg', '/fotos/museo-2.jpg']
+  const gallery = (content.gallery || ['/fotos/brasil.jpg', '/fotos/mural.jpg', '/fotos/playa.jpg', '/fotos/museo-2.jpg'])
+    .filter(item => typeof item === 'string' || item.visible !== false)
 
   return (
     <section id="festival" className="py-24 px-6 bg-crema overflow-hidden">
@@ -53,12 +54,16 @@ export default function FestivalSection({ content }) {
 
         {/* Extra photos strip */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {gallery.map((src, i) => (
-            <div key={i} className="aspect-square overflow-hidden rounded-xl shadow-md">
+          {gallery.map((item, i) => (
+            <div 
+              key={i} 
+              className="aspect-square overflow-hidden rounded-xl shadow-md cursor-pointer group"
+              onClick={() => onOpenGallery(gallery, i)}
+            >
               <img
-                src={src}
+                src={item.url || item}
                 alt=""
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
           ))}

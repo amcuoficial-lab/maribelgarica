@@ -1,4 +1,4 @@
-export default function TrajectorySection({ content }) {
+export default function TrajectorySection({ content, onOpenGallery }) {
   if (!content) return null
 
   const projects = content.projects || [
@@ -27,21 +27,25 @@ export default function TrajectorySection({ content }) {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map(({ photo, title, description, tag }, i) => (
-            <article key={i} className="group overflow-hidden rounded-2xl bg-crema shadow-md hover:shadow-xl transition-shadow duration-300">
+          {projects.filter(p => p.visible !== false).map((project, i) => (
+            <article 
+              key={i} 
+              className="group overflow-hidden rounded-2xl bg-crema shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+              onClick={() => onOpenGallery(projects.filter(p => p.visible !== false), i)}
+            >
               <div className="aspect-[4/3] overflow-hidden">
                 <img
-                  src={photo}
-                  alt={title}
+                  src={project.photo}
+                  alt={project.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="p-6">
                 <span className="inline-block text-xs font-semibold text-terracota bg-terracota/10 px-3 py-1 rounded-full mb-3">
-                  {tag}
+                  {project.tag}
                 </span>
-                <h3 className="font-display text-xl text-cafe-oscuro font-semibold mb-2">{title}</h3>
-                <p className="text-cafe-medio text-sm leading-relaxed">{description}</p>
+                <h3 className="font-display text-xl text-cafe-oscuro font-semibold mb-2">{project.title}</h3>
+                <p className="text-cafe-medio text-sm leading-relaxed">{project.description}</p>
               </div>
             </article>
           ))}

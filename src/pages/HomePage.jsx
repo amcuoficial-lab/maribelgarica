@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSiteData } from '../hooks/useSiteData'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
@@ -8,9 +9,15 @@ import FestivalSection from '../components/home/FestivalSection'
 import PodcastSection from '../components/home/PodcastSection'
 import BooksSection from '../components/home/BooksSection'
 import ContactSection from '../components/home/ContactSection'
+import MediaModal from '../components/ui/MediaModal'
 
 export default function HomePage() {
-  const { sections, settings, loading } = useSiteData()
+  const { sections, settings, publicBooks, loading } = useSiteData()
+  const [modal, setModal] = useState({ isOpen: false, items: [], index: 0 })
+
+  const openGallery = (items, index = 0) => {
+    setModal({ isOpen: true, items, index })
+  }
 
   if (loading) {
     return (
@@ -39,22 +46,38 @@ export default function HomePage() {
           .map((section) => {
             const Component = sectionMap[section.id]
             if (!Component) return null
-            return <Component key={section.id} content={section.content} />
+            return (
+              <Component 
+                key={section.id} 
+                content={section.content} 
+                onOpenGallery={openGallery} 
+                publicBooks={section.id === 'libros' ? publicBooks : undefined}
+              />
+            )
           })}
         
-        {/* If no sections defined in DB, show fallback or base sections */}
+        {/* If no sections defined in DB, show fallback */}
         {sections.length === 0 && (
           <>
             <HeroSection />
             <AboutSection />
-            <TrajectorySection />
-            <FestivalSection />
+            <TrajectorySection onOpenGallery={openGallery} />
+            <FestivalSection onOpenGallery={openGallery} />
             <PodcastSection />
-            <BooksSection />
+            <BooksSection onOpenGallery={openGallery} publicBooks={publicBooks} />
             <ContactSection />
           </>
         )}
       </main>
+
+      <MediaModal 
+        isOpen={modal.isOpen}
+        onClose={() => setModal({ ...modal, isOpen: false })}
+        items={modal.items}
+        currentIndex={modal.index}
+        onNavigate={(newIdx) => setModal({ ...modal, index: newIdx })}
+      />
+
       <Footer socialLinks={settings.social_links} />
     </>
   )

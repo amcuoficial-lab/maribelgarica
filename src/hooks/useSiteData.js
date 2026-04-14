@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase'
 export function useSiteData() {
   const [sections, setSections] = useState([])
   const [settings, setSettings] = useState({})
+  const [publicBooks, setPublicBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -15,7 +16,7 @@ export function useSiteData() {
     try {
       setLoading(true)
       
-      const [sectionsRes, settingsRes] = await Promise.all([
+      const [sectionsRes, settingsRes, booksRes] = await Promise.all([
         supabase
           .from('site_sections')
           .select('*')
@@ -23,17 +24,22 @@ export function useSiteData() {
           .order('section_order', { ascending: true }),
         supabase
           .from('site_settings')
-          .select('value')
-          .eq('key', 'global')
-          .single()
+          .select('*')
+          .eq('id', 'global')
+          .single(),
+        supabase
+          .from('libros')
+          .select('*, microcuentos(count)')
+          .eq('es_publico', true)
+          .eq('activo', true)
+          .order('created_at', { ascending: false })
       ])
 
       if (sectionsRes.error) throw sectionsRes.error
-      // Handle missing settings gracefully for the frontend
-      const settingsData = settingsRes.data?.value || {}
-
+      
       setSections(sectionsRes.data || [])
-      setSettings(settingsData)
+      setSettings(settingsRes.data || {})
+      setPublicBooks(booksRes.data || [])
 
     } catch (err) {
       console.error('Error fetching site data:', err)
@@ -47,5 +53,5 @@ export function useSiteData() {
     fetchData()
   }, [])
 
-  return { sections, settings, loading, error, refresh: fetchData }
+  return { sections, settings, publicBooks, loading, error, refresh: fetchData }
 }
