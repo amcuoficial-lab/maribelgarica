@@ -23,16 +23,17 @@ export function useSiteData() {
           .order('section_order', { ascending: true }),
         supabase
           .from('site_settings')
-          .select('*')
-          .eq('id', 'global')
+          .select('value')
+          .eq('key', 'global')
           .single()
       ])
 
       if (sectionsRes.error) throw sectionsRes.error
-      if (settingsRes.error) throw settingsRes.error
+      // Handle missing settings gracefully for the frontend
+      const settingsData = settingsRes.data?.value || {}
 
       setSections(sectionsRes.data || [])
-      setSettings(settingsRes.data || {})
+      setSettings(settingsData)
 
     } catch (err) {
       console.error('Error fetching site data:', err)

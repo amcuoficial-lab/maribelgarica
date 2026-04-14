@@ -24,27 +24,30 @@ export default function AdminConfigPage() {
       .order('section_order', { ascending: true })
 
     // Fetch Settings
+    // The table uses 'key' and 'value'. We look for the 'global' configuration.
     const { data: settData, error: settErr } = await supabase
       .from('site_settings')
       .select('*')
-      .eq('id', 'global')
+      .eq('key', 'global')
       .single()
 
-    if (secErr || settErr) console.error(secErr || settErr)
-    else {
-      setSections(secData || [])
-      setSettings(settData || null)
-      
-      if (!selectedItem) {
-        setSelectedItem({ id: 'settings', section_name: 'Ajustes Generales', content: settData })
+    if (secErr) console.error("Error fetching sections:", secErr)
+    
+    // We treat settings error (like no rows) gracefully to not block the page
+    const settingsObj = settData ? { id: 'settings', section_name: 'Ajustes Generales', content: settData.value } : { id: 'settings', section_name: 'Ajustes Generales', content: {} }
+
+    setSections(secData || [])
+    setSettings(settingsObj.content)
+    
+    if (!selectedItem) {
+      setSelectedItem(settingsObj)
+    } else {
+      // Refresh selected item
+      if (selectedItem.id === 'settings') {
+        setSelectedItem(settingsObj)
       } else {
-        // Refresh selected item
-        if (selectedItem.id === 'settings') {
-          setSelectedItem({ id: 'settings', section_name: 'Ajustes Generales', content: settData })
-        } else {
-          const updated = secData.find(s => s.id === selectedItem.id)
-          setSelectedItem(updated)
-        }
+        const updated = (secData || []).find(s => s.id === selectedItem.id)
+        if (updated) setSelectedItem(updated)
       }
     }
     setLoading(false)
@@ -84,11 +87,9 @@ export default function AdminConfigPage() {
 
     let error
     if (selectedItem.id === 'settings') {
-      const { id: _id, updated_at: _ua, ...updateData } = selectedItem.content
       const { error: err } = await supabase
         .from('site_settings')
-        .update(updateData)
-        .eq('id', 'global')
+        .upsert({ key: 'global', value: selectedItem.content })
       error = err
     } else {
       const { error: err } = await supabase

@@ -129,15 +129,20 @@ insert into public.site_sections (id, section_name, section_order, content) valu
 )
 on conflict (id) do nothing;
 
--- 6. Social Links Seeding
+-- 6. Site Settings Seeding (Centralized 'global' object)
 insert into public.site_settings (key, value) values
 (
-  'social_links',
+  'global',
   '{
-    "instagram": "https://www.instagram.com/maribelgarciamuseoscuentos",
-    "spotify": "https://open.spotify.com/show/3x79YfS5u2YID5U8vofN6n",
-    "whatsapp": "https://wa.me/549123456789",
-    "email": "maribelmuseos@hotmail.com"
+    "site_name": "Maribel García",
+    "contact_email": "maribelmuseos@hotmail.com",
+    "social_links": {
+      "instagram": "https://www.instagram.com/maribelgarciamuseoscuentos",
+      "spotify": "https://open.spotify.com/show/3x79YfS5u2YID5U8vofN6n",
+      "whatsapp": "https://wa.me/549123456789",
+      "youtube": "",
+      "tiktok": ""
+    }
   }'
 )
-on conflict (key) do nothing;
+on conflict (key) do update set value = excluded.value;
