@@ -65,7 +65,7 @@ function ItemFields({ item, onChange, onStartCrop }) {
   // --- Renderización por ID ---
   const sectionId = id.toLowerCase().trim()
 
-  if (sectionId === 'settings') {
+  if (sectionId === 'settings' || sectionId === 'general') {
     return (
       <div className="space-y-6">
         <AdminInput label="Site Name" value={content.site_name} field="site_name" onChange={updateField} />
@@ -85,7 +85,7 @@ function ItemFields({ item, onChange, onStartCrop }) {
     )
   }
 
-  if (sectionId === 'about') {
+  if (sectionId === 'about' || sectionId === 'bio') {
     return (
       <div className="space-y-6">
         <AdminInput label="Título de Sección" value={content.title} field="title" onChange={updateField} />
@@ -205,9 +205,10 @@ export default function AdminConfigPage() {
     let isMounted = true
     const fetchData = async () => {
       setLoading(true)
-      const { data: items, error } = await supabase.from('site_config').select('*').order('id')
+      // FIX: El nombre de la tabla correcto es site_settings, no site_config
+      const { data: items, error } = await supabase.from('site_settings').select('*').order('id')
       if (isMounted) {
-        if (error) console.error(error)
+        if (error) console.error('Error fetching site_settings:', error)
         else setData(items || [])
         setLoading(false)
       }
@@ -251,7 +252,7 @@ export default function AdminConfigPage() {
     setMessage(null)
     
     const { error } = await supabase
-      .from('site_config')
+      .from('site_settings')
       .update({ content: selectedItem.content })
       .eq('id', selectedItem.id)
 
@@ -260,7 +261,7 @@ export default function AdminConfigPage() {
     else {
       setMessage({ type: 'success', text: '¡Cambios guardados correctamente!' })
       // fetchData equivalent
-      const { data: items } = await supabase.from('site_config').select('*').order('id')
+      const { data: items } = await supabase.from('site_settings').select('*').order('id')
       if (items) setData(items)
     }
   }
