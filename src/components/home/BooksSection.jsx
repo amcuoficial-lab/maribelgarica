@@ -1,7 +1,7 @@
 export default function BooksSection({ content, onOpenGallery, publicBooks = [] }) {
   if (!content) return null
 
-  const milestones = (content.books || [
+  const milestones = (Array.isArray(content.books) ? content.books : [
     { img: '/fotos/feria.jpg', title: 'Presentación en Feria', sub: 'Feria Internacional del Libro, Buenos Aires' },
     { img: '/fotos/radio.jpg', title: 'En los Medios', sub: 'Locutora y conductora de radio y podcast' },
     { img: '', title: 'Reconocimientos', sub: 'Trayectoria cultural' },

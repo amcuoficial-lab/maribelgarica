@@ -14,35 +14,47 @@ export function useSiteData() {
 
   const fetchData = async () => {
     try {
+      console.log('--- FETCH START ---')
       setLoading(true)
       
-      const [sectionsRes, settingsRes, booksRes] = await Promise.all([
-        supabase
-          .from('site_sections')
-          .select('*')
-          .eq('is_visible', true)
-          .order('section_order', { ascending: true }),
-        supabase
-          .from('site_settings')
-          .select('*')
-          .eq('id', 'global')
-          .maybeSingle(),
-        supabase
-          .from('libros')
-          .select('*, microcuentos(count)')
-          .eq('es_publico', true)
-          .eq('activo', true)
-          .order('created_at', { ascending: false })
-      ])
+      console.log('Fetching sections...')
+      const sectionsRes = await supabase
+        .from('site_sections')
+        .select('*')
+        .eq('is_visible', true)
+        .order('section_order', { ascending: true })
+      console.log('Sections status:', sectionsRes.error ? 'ERROR' : 'OK', sectionsRes.data?.length)
+
+      console.log('Fetching settings...')
+      const settingsRes = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('id', 'global')
+        .maybeSingle()
+      console.log('Settings status:', settingsRes.error ? 'ERROR' : 'OK', settingsRes.data)
+
+      console.log('Fetching books...')
+      const booksRes = await supabase
+        .from('libros')
+        .select('*')
+        .eq('es_publico', true)
+        .eq('activo', true)
+        .order('created_at', { ascending: false })
+      console.log('Books status:', booksRes.error ? 'ERROR' : 'OK', booksRes.data?.length)
 
       if (sectionsRes.error) throw sectionsRes.error
       
-      setSections(sectionsRes.data || [])
+      const mappedSections = (sectionsRes.data || []).map(s => ({
+        ...s,
+        id: s.id // The column name in DB is actually 'id'
+      }))
+
+      setSections(mappedSections)
       setSettings(settingsRes.data || { site_name: 'Maribel García', social_links: {} })
       setPublicBooks(booksRes.data || [])
-
+      console.log('--- FETCH SUCCESS ---')
     } catch (err) {
-      console.error('Error fetching site data:', err)
+      console.error('--- FETCH ERROR ---', err)
       setError(err.message)
     } finally {
       setLoading(false)

@@ -5,24 +5,28 @@ import { useEffect } from 'react'
  * Supports single images or a list (carousel mode).
  */
 export default function MediaModal({ isOpen, onClose, items = [], currentIndex = 0, onNavigate }) {
-  if (!isOpen || items.length === 0) return null
-
   const item = items[currentIndex] || items[0]
   const hasMultiple = items.length > 1
 
   // Close on Escape key
   useEffect(() => {
+    if (!isOpen || items.length === 0) return
     const handleEsc = (e) => { e.key === 'Escape' && onClose() }
     window.addEventListener('keydown', handleEsc)
     return () => window.removeEventListener('keydown', handleEsc)
-  }, [onClose])
+  }, [isOpen, items.length, onClose])
 
   // Prevent background scroll
   useEffect(() => {
-    if (isOpen) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = 'unset'
+    if (!isOpen || items.length === 0) {
+      document.body.style.overflow = 'unset'
+      return
+    }
+    document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = 'unset' }
-  }, [isOpen])
+  }, [isOpen, items.length])
+
+  if (!isOpen || items.length === 0) return null
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 animate-fade-in">

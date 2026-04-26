@@ -11,6 +11,7 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target
+    if (files && name === 'portadaFile') {
       setForm((f) => ({ ...f, portadaFile: files[0] }))
     } else if (files && name === 'audioFile') {
       setForm((f) => ({ ...f, audioFile: files[0] }))
@@ -35,7 +36,8 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
 
     try {
       let portada_url = null
-
+      if (form.portadaFile) {
+        setProgress('Subiendo portada…')
         portada_url = await uploadFile('portadas-libros', form.portadaFile, 'libro')
       }
 
@@ -107,7 +109,14 @@ export default function LibroForm({ onSaved, onCancel, initialData }) {
           Libro Público (Visible en la web general)
         </label>
       </div>
-
+      <div>
+        <label className="block text-sm font-medium text-cafe-medio mb-1.5">Descripción (opcional)</label>
+        <textarea
+          name="descripcion"
+          rows={3}
+          value={form.descripcion}
+          onChange={handleChange}
+          className="w-full px-4 py-2.5 bg-marfil border border-arena rounded-xl text-cafe-oscuro focus:outline-none focus:border-terracota transition-colors resize-none"
           placeholder="Breve descripción del libro…"
         />
       </div>
