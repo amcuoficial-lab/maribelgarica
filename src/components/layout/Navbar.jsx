@@ -65,6 +65,14 @@ export default function Navbar({ socialLinks = {} }) {
                 </button>
               </li>
             ))}
+            <li>
+              <Link
+                to="/museodelbeso"
+                className="text-sm font-medium text-terracota hover:text-ambar transition-colors border border-terracota/40 hover:border-ambar px-3 py-1 rounded-full"
+              >
+                💋 Museo del Beso
+              </Link>
+            </li>
           </ul>
 
           {/* Social icons */}
@@ -115,6 +123,15 @@ export default function Navbar({ socialLinks = {} }) {
                 </button>
               </li>
             ))}
+            <li>
+              <Link
+                to="/museodelbeso"
+                onClick={() => setOpen(false)}
+                className="text-base font-medium text-terracota hover:text-ambar transition-colors w-full text-left py-1 flex items-center gap-2"
+              >
+                💋 Museo del Beso
+              </Link>
+            </li>
           </ul>
 
           {/* Social Mobile */}

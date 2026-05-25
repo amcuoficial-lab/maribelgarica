@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
+import MuseoDelBesoPage from './pages/MuseoDelBesoPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminLibrosPage from './pages/AdminLibrosPage'
 import AdminLibroCuentosPage from './pages/AdminLibroCuentosPage'
@@ -15,6 +16,7 @@ export default function App() {
     <Routes>
       {/* Sitio público */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/museodelbeso" element={<MuseoDelBesoPage />} />
       <Route path="/cuento/:token" element={<CuentoPage />} />
 
       {/* Panel admin */}
