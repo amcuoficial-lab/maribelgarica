@@ -87,12 +87,13 @@ const imagenesGaleria = Array.from({ length: 17 }, (_, i) => ({
   titulo: `Recuerdo fotográfico #${i + 1}`,
 }))
 
-// Array con los 14 videos copiados
-const videosGaleria = Array.from({ length: 14 }, (_, i) => ({
-  id: i + 1,
-  url: `/fotos/museo/video-${i + 1}.mp4`,
+// Array con los 14 videos copiados (poniendo la Historia narrada #10 en primer lugar)
+const videosIds = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]
+const videosGaleria = videosIds.map((id) => ({
+  id: id,
+  url: `/fotos/museo/video-${id}.mp4`,
   tipo: 'video',
-  titulo: `Historia narrada #${i + 1}`,
+  titulo: id === 10 ? 'Historia narrada #10 (Fundación del Museo)' : `Historia narrada #${id}`,
 }))
 
 export default function MuseoDelBesoPage() {
