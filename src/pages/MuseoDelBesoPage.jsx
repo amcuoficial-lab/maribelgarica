@@ -174,6 +174,20 @@ export default function MuseoDelBesoPage() {
     }
   }
 
+  const [inauguracionPlaying, setInauguracionPlaying] = useState(false)
+  const inauguracionVideoRef = useRef(null)
+
+  const handlePlayInauguracion = () => {
+    if (inauguracionVideoRef.current) {
+      if (inauguracionPlaying) {
+        inauguracionVideoRef.current.pause()
+      } else {
+        inauguracionVideoRef.current.play()
+      }
+      setInauguracionPlaying(!inauguracionPlaying)
+    }
+  }
+
   // Combinación de elementos para la galería
   const itemsGaleria = [...videosGaleria, ...imagenesGaleria].filter((item) => {
     if (filtro === 'videos') return item.tipo === 'video'
@@ -374,6 +388,59 @@ export default function MuseoDelBesoPage() {
             <p className="text-gray-400 max-w-xl mx-auto text-base font-lora leading-relaxed">
               Maribel García nos introduce a este museo comunitario a través de las historias y los besos 
               que tejieron las comunidades. Un recordatorio de lo que realmente importa.
+            </p>
+
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════
+            SECCIÓN INAUGURACIÓN DEL MUSEO
+        ══════════════════════════════════════ */}
+        <section id="inauguracion" className="py-24 px-6 bg-black border-b border-white/5 relative">
+          <div className="max-w-4xl mx-auto text-center space-y-12">
+            
+            <div className="space-y-4">
+              <span className="text-[#cc1111] text-xs font-extrabold uppercase tracking-[0.3em]">
+                Gran Hito
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold font-alice text-white">
+                La Inauguración del Museo
+              </h2>
+              <div className="w-16 h-0.5 bg-[#cc1111] mx-auto"></div>
+            </div>
+
+            {/* Reproductor de Video de la Inauguración (Formato Historia 9:16) */}
+            <div className="relative max-w-[330px] mx-auto rounded-2xl overflow-hidden border-2 border-white shadow-2xl bg-black aspect-[9/16] group">
+              <video
+                ref={inauguracionVideoRef}
+                className="w-full h-full object-cover"
+                src="/fotos/video-inauguracion.mp4"
+                playsInline
+                controls={inauguracionPlaying}
+                onClick={handlePlayInauguracion}
+              />
+              
+              {/* Overlay de Play inicial */}
+              {!inauguracionPlaying && (
+                <div 
+                  className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 group-hover:bg-black/40"
+                  onClick={handlePlayInauguracion}
+                >
+                  <button 
+                    className="w-20 h-20 bg-[#cc1111] text-white rounded-full flex items-center justify-center text-3xl shadow-lg transition-transform duration-300 group-hover:scale-110 active:scale-95"
+                    aria-label="Reproducir video de la inauguración"
+                  >
+                    ▶
+                  </button>
+                  <p className="mt-4 text-xs tracking-widest uppercase font-semibold text-white/80 font-lora">
+                    Ver video de la inauguración
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <p className="text-gray-400 max-w-xl mx-auto text-base font-lora leading-relaxed">
+              El emotivo momento de la apertura y el corte de cinta oficial de nuestro museo. Un logro comunitario compartido que marca el nacimiento de este espacio de afecto y memoria.
             </p>
 
           </div>
