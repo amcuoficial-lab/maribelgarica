@@ -105,6 +105,34 @@ export default function MuseoDelBesoPage() {
   
   // Lightbox modal state
   const [lightbox, setLightbox] = useState({ isOpen: false, item: null })
+
+  // Estados del Formulario de donación de historias
+  const [formNombre, setFormNombre] = useState('')
+  const [formEmail, setFormEmail] = useState('')
+  const [formTematica, setFormTematica] = useState('')
+  const [formTexto, setFormTexto] = useState('')
+
+  const getWordCount = (text) => {
+    return text.trim().split(/\s+/).filter(Boolean).length
+  }
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault()
+    const wordCount = getWordCount(formTexto)
+    if (wordCount > 500) {
+      alert(`Tu historia tiene ${wordCount} palabras. Por favor, redúcela para no superar el límite de 500 palabras.`)
+      return
+    }
+
+    const emailTo = 'maribelmuseos@hotmail.com'
+    const subject = `[Museo del Beso] Nueva historia - Temática: ${formTematica}`
+    const body = `Nombre del Remitente: ${formNombre}\n` +
+                 `Correo de Contacto: ${formEmail}\n` +
+                 `Temática: ${formTematica}\n\n` +
+                 `Historia:\n${formTexto}`
+
+    window.location.href = `mailto:${emailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
   
   // Estados para la animación de tirar besos
   const [kisses, setKisses] = useState([])
@@ -659,33 +687,113 @@ export default function MuseoDelBesoPage() {
         </section>
 
         {/* ══════════════════════════════════════
-            CTA - COMPARTE TU HISTORIA
+            CTA - COMPARTE TU HISTORIA (FORMULARIO INTERACTIVO)
         ══════════════════════════════════════ */}
-        <section className="py-28 px-6 bg-[#090909] relative text-center">
+        <section className="py-24 px-6 bg-[#090909] relative">
           <div className="max-w-3xl mx-auto space-y-8 relative z-10">
-            <span className="text-4xl">💌</span>
-            <h2 className="text-4xl md:text-6xl font-bold font-alice text-white">
-              ¿Querés donar un beso al museo?
-            </h2>
-            <p className="text-gray-400 font-lora max-w-lg mx-auto text-base leading-relaxed">
-              Los cuentos se enriquecen cuando los compartimos. Si tenés una historia, 
-              una carta, una foto o el recuerdo de un beso que quieras atesorar aquí, escribile a Maribel.
-            </p>
-
-            <div className="pt-4 flex flex-wrap gap-4 justify-center">
-              <a
-                href="/#contacto"
-                className="px-8 py-3.5 bg-white text-black hover:bg-[#cc1111] hover:text-white font-bold rounded-full transition-all duration-300 text-sm tracking-wider uppercase inline-flex items-center gap-2 shadow-lg"
-              >
-                Enviar mi historia
-              </a>
-              <Link
-                to="/"
-                className="px-8 py-3.5 border border-neutral-700 hover:border-white text-white font-bold rounded-full transition-all duration-300 text-sm tracking-wider uppercase inline-flex items-center gap-2"
-              >
-                Volver al inicio
-              </Link>
+            <div className="text-center space-y-2">
+              <span className="text-4xl block mb-2">💌</span>
+              <h2 className="text-4xl md:text-5xl font-bold font-alice text-white">
+                ¿Querés donar un beso al museo?
+              </h2>
+              <p className="text-gray-400 font-lora max-w-lg mx-auto text-sm leading-relaxed">
+                Los cuentos se enriquecen cuando los compartimos. Escribí tu historia a continuación y envíasela directamente a Maribel a <span className="text-[#cc1111] font-semibold">maribelmuseos@hotmail.com</span>.
+              </p>
             </div>
+
+            {/* Formulario */}
+            <form onSubmit={handleFormSubmit} className="space-y-6 bg-black/40 border border-neutral-900 p-8 md:p-10 rounded-2xl shadow-xl max-w-2xl mx-auto font-lora">
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Nombre */}
+                <div className="space-y-2 text-left">
+                  <label htmlFor="nombre" className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    Tu Nombre y Apellido
+                  </label>
+                  <input
+                    type="text"
+                    id="nombre"
+                    required
+                    value={formNombre}
+                    onChange={(e) => setFormNombre(e.target.value)}
+                    placeholder="Ej. Graciela Gómez"
+                    className="w-full bg-[#0a0a0a] border border-neutral-800 focus:border-[#cc1111] focus:ring-1 focus:ring-[#cc1111] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-all"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="space-y-2 text-left">
+                  <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    Tu Correo Electrónico
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    required
+                    value={formEmail}
+                    onChange={(e) => setFormEmail(e.target.value)}
+                    placeholder="Ej. graciela@correo.com"
+                    className="w-full bg-[#0a0a0a] border border-neutral-800 focus:border-[#cc1111] focus:ring-1 focus:ring-[#cc1111] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Temática */}
+              <div className="space-y-2 text-left">
+                <label htmlFor="tematica" className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                  Temática de la Historia
+                </label>
+                <input
+                  type="text"
+                  id="tematica"
+                  required
+                  value={formTematica}
+                  onChange={(e) => setFormTematica(e.target.value)}
+                  placeholder="Ej. El primer beso de amor, Un beso de despedida en el tren, etc."
+                  className="w-full bg-[#0a0a0a] border border-neutral-800 focus:border-[#cc1111] focus:ring-1 focus:ring-[#cc1111] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-all"
+                />
+              </div>
+
+              {/* Texto de la Historia */}
+              <div className="space-y-2 text-left">
+                <div className="flex justify-between items-center">
+                  <label htmlFor="historia" className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    Tu Historia
+                  </label>
+                  <span className={`text-xs font-semibold ${
+                    formTexto ? (getWordCount(formTexto) > 500 ? 'text-[#cc1111]' : 'text-gray-500') : 'text-gray-500'
+                  }`}>
+                    {formTexto ? getWordCount(formTexto) : 0} / 500 palabras
+                  </span>
+                </div>
+                <textarea
+                  id="historia"
+                  required
+                  rows={6}
+                  value={formTexto}
+                  onChange={(e) => setFormTexto(e.target.value)}
+                  placeholder="Escribí aquí tu recuerdo... Máximo 500 palabras."
+                  className="w-full bg-[#0a0a0a] border border-neutral-800 focus:border-[#cc1111] focus:ring-1 focus:ring-[#cc1111] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-all resize-none"
+                />
+              </div>
+
+              {/* Botones de acción */}
+              <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto px-8 py-3.5 bg-white text-black hover:bg-[#cc1111] hover:text-white font-bold rounded-full transition-all duration-300 text-sm tracking-wider uppercase inline-flex items-center justify-center gap-2 shadow-lg cursor-pointer"
+                >
+                  Enviar mi historia por Correo 💋
+                </button>
+                <Link
+                  to="/"
+                  className="w-full sm:w-auto px-8 py-3.5 border border-neutral-800 hover:border-white text-white font-bold rounded-full transition-all duration-300 text-sm tracking-wider uppercase inline-flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  Volver al inicio
+                </Link>
+              </div>
+
+            </form>
           </div>
         </section>
       </main>
