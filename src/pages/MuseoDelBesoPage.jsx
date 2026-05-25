@@ -254,8 +254,8 @@ export default function MuseoDelBesoPage() {
               <div className="w-16 h-1 bg-[#cc1111] mx-auto rounded-full"></div>
             </div>
 
-            {/* Reproductor de Video Premium */}
-            <div className="relative max-w-2xl mx-auto rounded-2xl overflow-hidden border-2 border-white shadow-2xl bg-black aspect-video group">
+            {/* Reproductor de Video Premium en Formato Historia (9:16) */}
+            <div className="relative max-w-[330px] mx-auto rounded-2xl overflow-hidden border-2 border-white shadow-2xl bg-black aspect-[9/16] group">
               <video
                 ref={videoRef}
                 className="w-full h-full object-cover"
