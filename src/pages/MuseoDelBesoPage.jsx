@@ -340,7 +340,7 @@ export default function MuseoDelBesoPage() {
                   <img
                     src="/fotos/logo-museo.png"
                     alt="Logo El Museo de los Besos"
-                    className="w-full h-full object-cover scale-[1.02] rounded-full select-none pointer-events-none"
+                    className="w-full h-full object-contain rounded-full select-none pointer-events-none"
                   />
                 </div>
 
