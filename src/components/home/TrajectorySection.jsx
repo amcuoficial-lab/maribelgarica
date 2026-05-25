@@ -19,7 +19,7 @@ export default function TrajectorySection({ content, onOpenGallery }) {
             Trayectoria
           </p>
           <h2 className="font-display text-4xl md:text-5xl text-cafe-oscuro">
-            {content.title || 'Espectáculos & Proyectos'}
+            {content.title || 'Fundadora de 10 museos y proyectos'}
           </h2>
           <p className="text-cafe-medio mt-4 max-w-xl mx-auto whitespace-pre-line">
             {content.description || 'Tres décadas recorriendo escenarios, museos y comunidades con el poder transformador de las historias.'}
