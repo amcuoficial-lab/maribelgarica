@@ -106,6 +106,33 @@ export default function MuseoDelBesoPage() {
   // Lightbox modal state
   const [lightbox, setLightbox] = useState({ isOpen: false, item: null })
   
+  // Estados para la animación de tirar besos
+  const [kisses, setKisses] = useState([])
+  const [isKissing, setIsKissing] = useState(false)
+
+  const triggerKiss = () => {
+    setIsKissing(true)
+    setTimeout(() => setIsKissing(false), 600)
+
+    const id = Date.now() + Math.random()
+    const x = (Math.random() - 0.5) * 160 // -80px a 80px
+    const y = 100 + Math.random() * 120 // 100px a 220px hacia arriba
+    const rotate = (Math.random() - 0.5) * 45 // rotación aleatoria
+
+    const newKiss = { id, x, y, rotate }
+    setKisses((prev) => [...prev, newKiss])
+
+    setTimeout(() => {
+      setKisses((prev) => prev.filter((k) => k.id !== id))
+    }, 2000)
+  }
+
+  // Tirar un beso automático cada 3.5 segundos
+  useEffect(() => {
+    const interval = setInterval(triggerKiss, 3500)
+    return () => clearInterval(interval)
+  }, [])
+
   const videoRef = useRef(null)
   const piezasRef = useRef([])
   const galeriaRef = useRef([])
@@ -249,17 +276,49 @@ export default function MuseoDelBesoPage() {
               </div>
             </div>
 
-            {/* Logo en el Hero */}
+            {/* Logo en el Hero (Interactivo y animado) */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative group">
+              <div 
+                className="relative group cursor-pointer"
+                onClick={triggerKiss}
+                onMouseEnter={triggerKiss}
+              >
+                {/* Glow efecto de fondo */}
                 <div className="absolute inset-0 bg-[#cc1111]/25 rounded-full filter blur-2xl group-hover:bg-[#cc1111]/35 transition-all duration-500"></div>
-                <div className="relative bg-black border-4 border-white p-6 rounded-full w-72 h-72 md:w-85 md:h-85 flex items-center justify-center shadow-2xl transition-transform duration-500 hover:rotate-6">
+                
+                {/* Contenedor circular con máscara perfecta */}
+                <div 
+                  className={`relative bg-[#080808] border-4 border-white rounded-full w-72 h-72 md:w-85 md:h-85 overflow-hidden flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                    isKissing ? 'scale-[0.9] md:scale-[0.9]' : 'hover:scale-[1.02]'
+                  }`}
+                  style={{
+                    animation: isKissing ? 'mwah 0.6s ease-in-out' : 'none'
+                  }}
+                >
                   <img
                     src="/fotos/logo-museo.png"
                     alt="Logo El Museo de los Besos"
-                    className="w-full h-full object-contain rounded-full"
+                    className="w-full h-full object-cover scale-[1.14] rounded-full select-none pointer-events-none"
                   />
                 </div>
+
+                {/* Emojis de besos flotantes animados */}
+                {kisses.map((k) => (
+                  <span
+                    key={k.id}
+                    className="absolute text-5xl pointer-events-none select-none z-30 animate-float-kiss"
+                    style={{
+                      '--kiss-x': `${k.x}px`,
+                      '--kiss-y': `${k.y}px`,
+                      '--kiss-rotate': `${k.rotate}deg`,
+                      left: '50%',
+                      top: '50%',
+                      transform: 'translate(-50%, -50%)',
+                    }}
+                  >
+                    💋
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -618,6 +677,36 @@ export default function MuseoDelBesoPage() {
 
       {/* Estilos e inyecciones de CSS personalizadas para tipografías y Navbar */}
       <style>{`
+        /* Animaciones para el logo y besos flotantes */
+        @keyframes float-kiss {
+          0% {
+            transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.3) rotate(var(--kiss-rotate));
+          }
+          100% {
+            transform: translate(
+              calc(-50% + var(--kiss-x)),
+              calc(-50% - var(--kiss-y))
+            ) scale(0.5) rotate(calc(var(--kiss-rotate) * 1.5));
+            opacity: 0;
+          }
+        }
+
+        .animate-float-kiss {
+          animation: float-kiss 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes mwah {
+          0% { transform: scale(1); }
+          25% { transform: scale(0.85); }
+          50% { transform: scale(1.12); }
+          100% { transform: scale(1); }
+        }
+
         /* Tipografías especiales para cuentacuentos */
         .font-alice {
           font-family: 'Alice', Georgia, serif !important;
