@@ -3,16 +3,14 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 
-// -------------------------------------------------------
-//  Colección de "piezas" del museo adaptadas a la nueva temática
-// -------------------------------------------------------
+// Colección de "piezas" del museo adaptadas a la nueva temática y estilo de cuentacuentos
 const piezas = [
   {
     id: 1,
     titulo: 'El Primer Beso',
     categoria: 'Memoria',
     descripcion:
-      'Ese instante suspendido en el tiempo donde el mundo deja de girar. En Hinojo, el viento de la tarde suele ser testigo de los primeros encuentros bajo la sombra de los árboles.',
+      'Ese instante suspendido en el tiempo donde el mundo deja de girar. Los primeros besos son el prólogo de todos los cuentos que viviremos.',
     icon: '💋',
     color: '#cc1111',
   },
@@ -21,7 +19,7 @@ const piezas = [
     titulo: 'El Beso de Buenas Noches',
     categoria: 'Cotidianidad',
     descripcion:
-      'El más silencioso, el más honesto. Como una semilla que se siembra en la noche esperando florecer en el nuevo día, cuida los sueños de quienes amamos.',
+      'El más silencioso, el más honesto. Como una semilla que se siembra en la noche esperando florecer en el nuevo día, cobija los sueños.',
     icon: '🌙',
     color: '#ffffff',
   },
@@ -30,7 +28,7 @@ const piezas = [
     titulo: 'El Beso en la Frente',
     categoria: 'Ternura & Cobijo',
     descripcion:
-      'Beso de madres, abuelas, y ancestros. Un pacto intergeneracional de protección que se transmite en silencio y dura para siempre.',
+      'Beso de madres, abuelas, y ancestros. Un pacto invisible de protección que se transmite a través del tiempo.',
     icon: '🌸',
     color: '#cc1111',
   },
@@ -39,7 +37,7 @@ const piezas = [
     titulo: 'El Beso de la Despedida',
     categoria: 'Duelo y Distancia',
     descripcion:
-      'El que queda grabado en la piel del alma al partir. En la historia de la inmigración en Hinojo, cuántos besos quedaron grabados en las estaciones de tren.',
+      'El que queda grabado en la piel del alma al partir. Promesas mudas escritas en el viento que esperan el reencuentro.',
     icon: '🕊️',
     color: '#ffffff',
   },
@@ -48,7 +46,7 @@ const piezas = [
     titulo: 'El Beso Prohibido',
     categoria: 'Valentía',
     descripcion:
-      'El que se resguarda en las sombras para proteger su luz. La historia de los pueblos guarda en secreto los besos que desafiaron el tiempo y la norma.',
+      'El que se resguarda en las sombras para proteger su luz. Historias secretas que desafiaron el olvido y la norma.',
     icon: '🔐',
     color: '#cc1111',
   },
@@ -57,7 +55,7 @@ const piezas = [
     titulo: 'Semillas de Esperanza',
     categoria: 'Eternidad',
     descripcion:
-      'Como dicen los abuelos de Hinojo: "Un beso es una semilla de esperanza". El amor sembrado hoy dará frutos en las generaciones del mañana.',
+      '"Un beso es una semilla de esperanza". El amor sembrado hoy en un gesto simple dará frutos en el mañana.',
     icon: '🌾',
     color: '#ffffff',
   },
@@ -66,29 +64,50 @@ const piezas = [
 const testimonios = [
   {
     texto:
-      '"Mi abuela me contaba que cuando llegó a Hinojo desde Alemania, lo único que traía era una carta de amor con un beso marcado en carmín y unas semillas de hinojo entre las páginas."',
-    autor: 'Vecina de Hinojo, 82 años',
-  },
-  {
-    texto:
-      '"Un beso es una semilla de esperanza. En los tiempos difíciles de nuestro pueblo, un abrazo y un beso en la mejilla eran el motor para seguir trabajando la tierra."',
-    autor: 'Don Héctor, historiador local',
-  },
-  {
-    texto:
-      '"Hay besos que se guardan como tesoros en el baúl de los recuerdos. Este museo nos permite volver a vivirlos."',
+      '"Hay besos que se guardan como tesoros en el baúl de los recuerdos. Este museo nos permite volver a abrirlos y escuchar su latido."',
     autor: 'Visitante del Museo',
   },
+  {
+    texto:
+      '"Los cuentos no solo se escriben con palabras, también se narran con los labios, en cada abrazo y en cada beso que dejamos marcado en la memoria del otro."',
+    autor: 'Maribel García',
+  },
+  {
+    texto:
+      '"Un beso es una semilla de esperanza. En cualquier rincón del mundo, un beso es el puente más corto entre dos almas."',
+    autor: 'Abuela de la comunidad',
+  },
 ]
+
+// Array con las 17 imágenes copiadas
+const imagenesGaleria = Array.from({ length: 17 }, (_, i) => ({
+  id: i + 1,
+  url: `/fotos/museo/img-${i + 1}.jpeg`,
+  tipo: 'foto',
+  titulo: `Recuerdo fotográfico #${i + 1}`,
+}))
+
+// Array con los 14 videos copiados
+const videosGaleria = Array.from({ length: 14 }, (_, i) => ({
+  id: i + 1,
+  url: `/fotos/museo/video-${i + 1}.mp4`,
+  tipo: 'video',
+  titulo: `Historia narrada #${i + 1}`,
+}))
 
 export default function MuseoDelBesoPage() {
   const [piezaActiva, setPiezaActiva] = useState(null)
   const [testimonioIdx, setTestimonioIdx] = useState(0)
   const [visible, setVisible] = useState({})
   const [videoPlaying, setVideoPlaying] = useState(false)
+  const [filtro, setFiltro] = useState('todos') // 'todos' | 'videos' | 'fotos'
+  
+  // Lightbox modal state
+  const [lightbox, setLightbox] = useState({ isOpen: false, item: null })
   
   const videoRef = useRef(null)
   const piezasRef = useRef([])
+  const galeriaRef = useRef([])
 
   // Carousel automático de testimonios
   useEffect(() => {
@@ -112,8 +131,9 @@ export default function MuseoDelBesoPage() {
       { threshold: 0.1 },
     )
     piezasRef.current.forEach((el) => el && obs.observe(el))
+    galeriaRef.current.forEach((el) => el && obs.observe(el))
     return () => obs.disconnect()
-  }, [])
+  }, [filtro])
 
   const handlePlayVideo = () => {
     if (videoRef.current) {
@@ -126,8 +146,16 @@ export default function MuseoDelBesoPage() {
     }
   }
 
+  // Combinación de elementos para la galería
+  const itemsGaleria = [...videosGaleria, ...imagenesGaleria].filter((item) => {
+    if (filtro === 'videos') return item.tipo === 'video'
+    if (filtro === 'fotos') return item.tipo === 'foto'
+    return true
+  })
+
   return (
     <div className="museo-body min-h-screen bg-[#000000] text-white overflow-hidden relative selection:bg-[#cc1111] selection:text-white">
+      
       {/* ══════════════════════════════════════
           FONDO PATRÓN DE BESOS Y SEMILLAS DE HINOJO
       ══════════════════════════════════════ */}
@@ -173,35 +201,35 @@ export default function MuseoDelBesoPage() {
         {/* ══════════════════════════════════════
             HERO SECTION (Negro, Blanco, Rojo)
         ══════════════════════════════════════ */}
-        <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 px-6">
-          <div className="max-w-5xl mx-auto w-full grid lg:grid-cols-12 gap-12 items-center">
+        <section className="relative min-h-[95vh] flex flex-col items-center justify-center pt-28 px-6">
+          <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-12 gap-12 items-center">
             
             {/* Texto Hero */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-3 bg-[#cc1111]/10 border border-[#cc1111]/30 px-4 py-1.5 rounded-full">
+            <div className="lg:col-span-7 space-y-8 text-left">
+              {/* Badge - Cambiado a 'Cualquier rincón del mundo' */}
+              <div className="inline-flex items-center gap-3 bg-[#cc1111]/10 border border-[#cc1111]/30 px-4 py-2 rounded-full">
                 <span className="text-[#cc1111] animate-pulse">💋</span>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#cc1111]">
-                  Hinojo · Argentina
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#cc1111]">
+                  Cualquier rincón del mundo
                 </span>
               </div>
 
-              <h1 className="text-5xl md:text-7xl font-bold font-display text-white leading-tight">
+              <h1 className="text-5xl md:text-7.5xl font-bold font-alice text-white leading-tight">
                 El Museo de los <br />
-                <span className="text-[#cc1111] relative">
+                <span className="text-[#cc1111] relative inline-block mt-1">
                   Besos
-                  <span className="absolute bottom-1 left-0 w-full h-1 bg-[#cc1111] rounded-full"></span>
+                  <span className="absolute bottom-2 left-0 w-full h-1 bg-[#cc1111] rounded-full"></span>
                 </span>
               </h1>
 
-              <p className="text-xl italic font-display text-gray-300">
+              <p className="text-2xl italic font-lora text-gray-300">
                 "Un beso es una semilla de esperanza"
               </p>
 
-              <p className="text-gray-400 max-w-lg leading-relaxed text-sm md:text-base">
-                Inspirado en la memoria afectiva de Hinojo, provincia de Buenos Aires. 
-                Un rincón digital y comunitario dedicado a salvaguardar los gestos, las historias, 
-                los adioses y los reencuentros sellados con un beso.
+              <p className="text-gray-400 max-w-lg leading-relaxed text-base font-lora">
+                Bienvenidos a un rincón donde las palabras se vuelven suspiros y la memoria se guarda en los labios. 
+                Aquí atesoramos los relatos, cartas, fotografías y gestos que marcan la historia emocional 
+                de los pueblos.
               </p>
 
               <div className="pt-4 flex flex-wrap gap-4">
@@ -209,23 +237,22 @@ export default function MuseoDelBesoPage() {
                   href="#introduccion"
                   className="px-8 py-3.5 bg-[#cc1111] hover:bg-red-700 text-white font-bold rounded-full transition-all duration-300 text-sm tracking-wider uppercase inline-flex items-center gap-2 shadow-lg shadow-[#cc1111]/35 hover:-translate-y-0.5"
                 >
-                  Ver introducción
+                  Escuchar bienvenida
                 </a>
                 <a
-                  href="#coleccion"
+                  href="#galeria"
                   className="px-8 py-3.5 border-2 border-white hover:bg-white hover:text-black text-white font-bold rounded-full transition-all duration-300 text-sm tracking-wider uppercase inline-flex items-center gap-2 hover:-translate-y-0.5"
                 >
-                  Explorar Sala
+                  Ver la Colección completa
                 </a>
               </div>
             </div>
 
-            {/* Logo de Referencia en el Hero */}
+            {/* Logo en el Hero */}
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative group">
-                {/* Glow efecto de fondo */}
-                <div className="absolute inset-0 bg-[#cc1111]/25 rounded-full filter blur-xl group-hover:bg-[#cc1111]/35 transition-all duration-500"></div>
-                <div className="relative bg-black border-4 border-white p-6 rounded-full w-72 h-72 md:w-80 md:h-80 flex items-center justify-center shadow-2xl transition-transform duration-500 hover:rotate-6">
+                <div className="absolute inset-0 bg-[#cc1111]/25 rounded-full filter blur-2xl group-hover:bg-[#cc1111]/35 transition-all duration-500"></div>
+                <div className="relative bg-black border-4 border-white p-6 rounded-full w-72 h-72 md:w-85 md:h-85 flex items-center justify-center shadow-2xl transition-transform duration-500 hover:rotate-6">
                   <img
                     src="/fotos/logo-museo.png"
                     alt="Logo El Museo de los Besos"
@@ -246,12 +273,12 @@ export default function MuseoDelBesoPage() {
             
             <div className="space-y-4">
               <span className="text-[#cc1111] text-xs font-extrabold uppercase tracking-[0.3em]">
-                Bienvenida de la fundadora
+                Presentación
               </span>
-              <h2 className="text-3xl md:text-5xl font-bold font-display text-white">
+              <h2 className="text-4xl md:text-5xl font-bold font-alice text-white">
                 Las historias detrás del beso
               </h2>
-              <div className="w-16 h-1 bg-[#cc1111] mx-auto rounded-full"></div>
+              <div className="w-16 h-0.5 bg-[#cc1111] mx-auto"></div>
             </div>
 
             {/* Reproductor de Video Premium en Formato Historia (9:16) */}
@@ -273,40 +300,139 @@ export default function MuseoDelBesoPage() {
                 >
                   <button 
                     className="w-20 h-20 bg-[#cc1111] text-white rounded-full flex items-center justify-center text-3xl shadow-lg transition-transform duration-300 group-hover:scale-110 active:scale-95"
-                    aria-label="Reproducir video de bienvenida"
+                    aria-label="Reproducir presentación"
                   >
                     ▶
                   </button>
-                  <p className="mt-4 text-xs tracking-widest uppercase font-semibold text-white/80">
-                    Reproducir video de presentación
+                  <p className="mt-4 text-xs tracking-widest uppercase font-semibold text-white/80 font-lora">
+                    Escuchar relato inicial
                   </p>
                 </div>
               )}
             </div>
 
-            <p className="text-gray-400 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
-              Maribel García nos introduce al concepto de la museología social a través de los besos 
-              en Hinojo. Escuchá el testimonio del origen de este museo sin paredes.
+            <p className="text-gray-400 max-w-xl mx-auto text-base font-lora leading-relaxed">
+              Maribel García nos introduce a este museo comunitario a través de las historias y los besos 
+              que tejieron las comunidades. Un recordatorio de lo que realmente importa.
             </p>
 
           </div>
         </section>
 
         {/* ══════════════════════════════════════
-            COLECCIÓN DE PIEZAS
+            SALA VIRTUAL / GALERÍA COMPLETA (NUEVO CONTENIDO REQUERIDO)
         ══════════════════════════════════════ */}
-        <section id="coleccion" className="py-24 px-6 bg-black relative">
+        <section id="galeria" className="py-24 px-6 bg-black relative">
+          <div className="max-w-7xl mx-auto">
+            
+            <div className="text-center space-y-4 mb-16">
+              <span className="text-[#cc1111] text-xs font-extrabold uppercase tracking-[0.3em]">
+                Archivo de Memorias
+              </span>
+              <h2 className="text-4xl md:text-6xl font-bold font-alice text-white">
+                La Vitrina de Historias
+              </h2>
+              <p className="text-gray-400 font-lora max-w-xl mx-auto">
+                Explorá los relatos grabados en video y las imágenes de archivo del Museo. Hacé clic en cualquier recuerdo para verlo a tamaño completo.
+              </p>
+
+              {/* Filtros */}
+              <div className="flex justify-center gap-3 pt-8 flex-wrap">
+                {[
+                  { id: 'todos', label: 'Todos los Recuerdos' },
+                  { id: 'videos', label: 'Historias en Video 🎥' },
+                  { id: 'fotos', label: 'Instantes en Fotos 📷' },
+                ].map((btn) => (
+                  <button
+                    key={btn.id}
+                    onClick={() => setFiltro(btn.id)}
+                    className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                      filtro === btn.id
+                        ? 'bg-[#cc1111] text-white shadow-md shadow-[#cc1111]/20'
+                        : 'bg-neutral-900 text-gray-400 hover:bg-neutral-800 hover:text-white border border-neutral-800'
+                    }`}
+                  >
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Grid de la Galería */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {itemsGaleria.map((item, i) => {
+                const isVis = visible[`gal-${item.tipo}-${item.id}`]
+                return (
+                  <div
+                    key={`${item.tipo}-${item.id}`}
+                    data-id={`gal-${item.tipo}-${item.id}`}
+                    ref={(el) => (galeriaRef.current[i] = el)}
+                    onClick={() => setLightbox({ isOpen: true, item })}
+                    className={`relative rounded-xl overflow-hidden cursor-pointer border border-neutral-900 group aspect-[3/4] bg-neutral-950 transition-all duration-500 hover:border-[#cc1111] hover:-translate-y-1 ${
+                      isVis ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
+                    style={{ transitionDelay: `${(i % 4) * 0.05}s` }}
+                  >
+                    {item.tipo === 'foto' ? (
+                      <img
+                        src={item.url}
+                        alt={item.titulo}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
+                      />
+                    ) : (
+                      <div className="w-full h-full relative">
+                        {/* Video Thumbnail (Poster/Preview) */}
+                        <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
+                          <span className="text-4xl">🎥</span>
+                        </div>
+                        <video
+                          src={item.url}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-108"
+                        />
+                      </div>
+                    )}
+
+                    {/* Hover Info Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                      <span className="text-[10px] font-bold text-[#cc1111] tracking-widest uppercase">
+                        {item.tipo === 'video' ? 'Video Historia' : 'Fotografía'}
+                      </span>
+                      <h4 className="text-sm font-bold text-white font-alice mt-1">
+                        {item.titulo}
+                      </h4>
+                    </div>
+
+                    {/* Icono de Reproducción / Zoom decorativo */}
+                    <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-xs backdrop-blur-sm">
+                      {item.tipo === 'video' ? '▶' : '🔍'}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════
+            COLECCIÓN DE PIEZAS CONCEPTUALES
+        ══════════════════════════════════════ */}
+        <section className="py-24 px-6 bg-[#090909] border-t border-white/5 relative">
           <div className="max-w-6xl mx-auto">
             
             <div className="text-center space-y-4 mb-16">
               <span className="text-[#cc1111] text-xs font-extrabold uppercase tracking-[0.3em]">
                 Exposición Permanente
               </span>
-              <h2 className="text-3xl md:text-5xl font-bold font-display text-white">
-                Las Piezas del Museo
+              <h2 className="text-4xl md:text-5xl font-bold font-alice text-white">
+                Las Vitrinas Conceptuales
               </h2>
-              <p className="text-gray-400 text-sm">
-                Seleccioná una pieza para abrir su vitrina e interactuar con su historia.
+              <p className="text-gray-400 font-lora text-sm">
+                Seleccioná una vitrina para abrirla y leer su relato.
               </p>
             </div>
 
@@ -328,33 +454,29 @@ export default function MuseoDelBesoPage() {
                     style={{ transitionDelay: `${i * 0.05}s` }}
                   >
                     <div>
-                      {/* Categoria & Icono */}
                       <div className="flex justify-between items-center mb-6">
-                        <span className="text-[10px] font-extrabold tracking-widest uppercase text-[#cc1111] bg-[#cc1111]/10 border border-[#cc1111]/20 px-2.5 py-1 rounded-full">
+                        <span className="text-[10px] font-extrabold tracking-widest uppercase text-[#cc1111] bg-[#cc1111]/10 border border-[#cc1111]/20 px-2.5 py-1 rounded-full font-lora">
                           {pieza.categoria}
                         </span>
                         <span className="text-2xl">{pieza.icon}</span>
                       </div>
 
-                      {/* Título de Pieza */}
-                      <h3 className="text-xl font-bold font-display text-white mb-4">
+                      <h3 className="text-xl font-bold font-alice text-white mb-4">
                         {pieza.titulo}
                       </h3>
 
-                      {/* Expandible de historia */}
                       <div className={`overflow-hidden transition-all duration-500 ${isActive ? 'max-h-56 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
-                        <p className="text-xs text-gray-300 leading-relaxed border-t border-neutral-800 pt-4 mt-2">
+                        <p className="text-sm text-gray-300 leading-relaxed font-lora border-t border-neutral-800 pt-4 mt-2">
                           {pieza.descripcion}
                         </p>
                       </div>
                     </div>
 
-                    {/* Botón de acción / estado */}
-                    <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-[#cc1111] transition-colors">
+                    <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-[#cc1111] transition-colors font-lora">
                       <span className={`transition-transform duration-300 ${isActive ? 'rotate-180 text-[#cc1111]' : ''}`}>
                         ▼
                       </span>
-                      {isActive ? 'Cerrar historia' : 'Detalles de la pieza'}
+                      {isActive ? 'Cerrar relato' : 'Abrir vitrina'}
                     </div>
                   </article>
                 )
@@ -367,30 +489,30 @@ export default function MuseoDelBesoPage() {
         {/* ══════════════════════════════════════
             TESTIMONIOS SLIDER
         ══════════════════════════════════════ */}
-        <section className="py-24 px-6 bg-[#090909] border-t border-white/5 relative">
+        <section className="py-24 px-6 bg-black border-t border-white/5 relative">
           <div className="max-w-4xl mx-auto text-center space-y-12">
             
             <div className="space-y-4">
               <span className="text-[#cc1111] text-xs font-extrabold uppercase tracking-[0.3em]">
-                Voces Comunitarias
+                Cuentos y Latidos
               </span>
-              <h2 className="text-3xl md:text-5xl font-bold font-display text-white">
-                Los Besos de Nuestra Tierra
+              <h2 className="text-4xl md:text-5xl font-bold font-alice text-white">
+                Historias Susurradas
               </h2>
             </div>
 
             {/* Testimonio Card con fade */}
             <div 
               key={testimonioIdx}
-              className="bg-black border border-neutral-800 p-8 md:p-12 rounded-2xl relative max-w-2xl mx-auto shadow-2xl animate-fade-in"
+              className="bg-neutral-950 border border-neutral-850 p-8 md:p-12 rounded-2xl relative max-w-2xl mx-auto shadow-2xl animate-fade-in"
             >
-              <span className="text-6xl text-[#cc1111] font-display absolute top-4 left-6 opacity-30">“</span>
-              <p className="text-base md:text-lg italic font-display text-gray-200 leading-relaxed relative z-10 px-4">
+              <span className="text-6xl text-[#cc1111] font-alice absolute top-4 left-6 opacity-30">“</span>
+              <p className="text-lg italic font-lora text-gray-200 leading-relaxed relative z-10 px-4">
                 {testimonios[testimonioIdx].texto}
               </p>
               <div className="mt-6 w-8 h-0.5 bg-[#cc1111] mx-auto"></div>
-              <p className="mt-4 text-xs font-bold uppercase tracking-widest text-[#cc1111]">
-                {testimonios[testimonioIdx].autor}
+              <p className="mt-4 text-xs font-bold uppercase tracking-widest text-[#cc1111] font-lora">
+                — {testimonios[testimonioIdx].autor}
               </p>
             </div>
 
@@ -401,7 +523,7 @@ export default function MuseoDelBesoPage() {
                   key={idx}
                   onClick={() => setTestimonioIdx(idx)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${idx === testimonioIdx ? 'w-8 bg-[#cc1111]' : 'w-2 bg-neutral-700'}`}
-                  aria-label={`Ir al testimonio ${idx + 1}`}
+                  aria-label={`Ir al relato ${idx + 1}`}
                 />
               ))}
             </div>
@@ -412,16 +534,15 @@ export default function MuseoDelBesoPage() {
         {/* ══════════════════════════════════════
             CTA - COMPARTE TU HISTORIA
         ══════════════════════════════════════ */}
-        <section className="py-28 px-6 bg-black relative text-center">
+        <section className="py-28 px-6 bg-[#090909] relative text-center">
           <div className="max-w-3xl mx-auto space-y-8 relative z-10">
             <span className="text-4xl">💌</span>
-            <h2 className="text-4xl md:text-6xl font-bold font-display text-white">
+            <h2 className="text-4xl md:text-6xl font-bold font-alice text-white">
               ¿Querés donar un beso al museo?
             </h2>
-            <p className="text-gray-400 max-w-lg mx-auto text-sm md:text-base leading-relaxed">
-              Los museos comunitarios se construyen colectivamente. Si tenés una historia, 
-              una carta, una foto o el recuerdo de un beso que quieras compartir, escribile a Maribel. 
-              Ayudanos a sembrar más esperanza.
+            <p className="text-gray-400 font-lora max-w-lg mx-auto text-base leading-relaxed">
+              Los cuentos se enriquecen cuando los compartimos. Si tenés una historia, 
+              una carta, una foto o el recuerdo de un beso que quieras atesorar aquí, escribile a Maribel.
             </p>
 
             <div className="pt-4 flex flex-wrap gap-4 justify-center">
@@ -444,9 +565,66 @@ export default function MuseoDelBesoPage() {
 
       <Footer />
 
-      {/* Estilos e inyecciones de CSS personalizadas para anular colores en Navbar del Museo */}
+      {/* ══════════════════════════════════════
+          LIGHTBOX MODAL PARA IMÁGENES Y VIDEOS
+      ══════════════════════════════════════ */}
+      {lightbox.isOpen && lightbox.item && (
+        <div 
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-8 animate-fade-in"
+          onClick={() => setLightbox({ isOpen: false, item: null })}
+        >
+          <div 
+            className="relative max-w-4xl w-full max-h-[85vh] flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Botón Cerrar */}
+            <button 
+              onClick={() => setLightbox({ isOpen: false, item: null })}
+              className="absolute -top-12 right-0 text-white hover:text-[#cc1111] text-3xl font-bold cursor-pointer transition-colors"
+            >
+              ✕
+            </button>
+
+            {/* Render del Item */}
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black">
+              {lightbox.item.tipo === 'foto' ? (
+                <img
+                  src={lightbox.item.url}
+                  alt={lightbox.item.titulo}
+                  className="max-w-full max-h-[75vh] object-contain"
+                />
+              ) : (
+                <video
+                  src={lightbox.item.url}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="max-w-full max-h-[75vh] object-contain aspect-video"
+                />
+              )}
+            </div>
+
+            {/* Titulo en Lightbox */}
+            <div className="mt-4 text-center">
+              <h4 className="text-lg font-alice text-white font-bold">{lightbox.item.titulo}</h4>
+              <p className="text-xs text-gray-400 font-lora mt-1">
+                {lightbox.item.tipo === 'video' ? 'Historia narrada en video' : 'Registro de archivo'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Estilos e inyecciones de CSS personalizadas para tipografías y Navbar */}
       <style>{`
-        /* Anulaciones para que la Navbar genérica se adapte al tema negro/rojo/blanco en esta subpágina */
+        /* Tipografías especiales para cuentacuentos */
+        .font-alice {
+          font-family: 'Alice', Georgia, serif !important;
+        }
+        .font-lora {
+          font-family: 'Lora', Georgia, serif !important;
+        }
+
         .museo-body nav {
           background-color: rgba(0, 0, 0, 0.9) !important;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -455,6 +633,7 @@ export default function MuseoDelBesoPage() {
         .museo-body nav a, 
         .museo-body nav button {
           color: #ffffff !important;
+          font-family: 'Lora', Georgia, serif !important;
         }
         .museo-body nav a:hover, 
         .museo-body nav button:hover {
