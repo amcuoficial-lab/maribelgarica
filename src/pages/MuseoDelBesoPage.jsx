@@ -65,7 +65,7 @@ const testimonios = [
   {
     texto:
       '"Hay besos que se guardan como tesoros en el baúl de los recuerdos. Este museo nos permite volver a abrirlos y escuchar su latido."',
-    autor: 'Visitante del Museo',
+    autor: 'Participante del Museo',
   },
   {
     texto:
