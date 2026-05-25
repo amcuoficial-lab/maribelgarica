@@ -328,9 +328,9 @@ export default function MuseoDelBesoPage() {
                 {/* Glow efecto de fondo */}
                 <div className="absolute inset-0 bg-[#cc1111]/25 rounded-full filter blur-2xl group-hover:bg-[#cc1111]/35 transition-all duration-500"></div>
                 
-                {/* Contenedor circular con máscara perfecta */}
+                {/* Contenedor circular transparente */}
                 <div 
-                  className={`relative bg-[#080808] border-4 border-white rounded-full w-72 h-72 md:w-85 md:h-85 overflow-hidden flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                  className={`relative bg-transparent rounded-full w-72 h-72 md:w-85 md:h-85 overflow-hidden flex items-center justify-center shadow-2xl transition-all duration-500 ${
                     isKissing ? 'scale-[0.9] md:scale-[0.9]' : 'hover:scale-[1.02]'
                   }`}
                   style={{
@@ -340,7 +340,7 @@ export default function MuseoDelBesoPage() {
                   <img
                     src="/fotos/logo-museo.png"
                     alt="Logo El Museo de los Besos"
-                    className="w-full h-full object-contain rounded-full select-none pointer-events-none"
+                    className="w-full h-full object-contain select-none pointer-events-none"
                   />
                 </div>
 
